@@ -1079,7 +1079,7 @@
       </div> -->
       <!-- End:: app settings Route -->
       <!-- Start:: Side Nav Routes -->
-      <!-- <div class="side_routes_wrapper" v-if="$can('settings index', 'settings')">
+      <div class="side_routes_wrapper" v-if="$can('settings index', 'settings')">
         <a-menu
           style="width: 100%"
           mode="vertical"
@@ -1116,7 +1116,7 @@
             </template>
           </a-sub-menu>
         </a-menu>
-      </div> -->
+      </div>
       <!-- End:: Side Nav Routes -->
 
       <!-- Start:: contacts Route -->
@@ -1334,7 +1334,7 @@ export default {
       sideNavbarList: [
         {
           key: "appContent",
-          title: this.$t("SIDENAV.AppContent.title"),
+          title: this.$t("SIDENAV.AppContent.newTitle"),
           icon: require("@/assets/media/icons/ui_icons/book_mark.svg"),
           children: [
             // {
@@ -1343,18 +1343,6 @@ export default {
             //   route: "/contact-messages/all",
             //   hasPermission: this.$can("contacts index", "contacts"),
             // },
-            {
-              key: "contact",
-              title: this.$t("PLACEHOLDERS.contact_admins"),
-              route: "/contact_settings",
-              hasPermission: this.$can("settings create", "settings"),
-            },
-            {
-              key: "AboutUs",
-              title: this.$t("SIDENAV.AppContent.aboutUs"),
-              route: "/app-content/about-us",
-              hasPermission: this.$can("settings create", "settings"),
-            },
             // {
             //   key: "addresses",
             //   title: this.$t("SIDENAV.AppContent.addresses"),
@@ -1365,19 +1353,13 @@ export default {
               key: "termsAndConditions",
               title: this.$t("SIDENAV.AppContent.termsAndConditions"),
               route: "/app-content/terms",
-              hasPermission: this.$can("settings create", "settings"),
+              hasPermission: this.$can("settings index", "settings"),
             },
             {
               key: "privacyPolicy",
               title: this.$t("SIDENAV.AppContent.privacyPolicy"),
               route: "/app-content/policy",
-              hasPermission: this.$can("settings create", "settings"),
-            },
-            {
-              key: "delete-account",
-              title: this.$t("PLACEHOLDERS.how_to_delete_account"),
-              route: "/app-content/delete-account",
-              hasPermission: this.$can("settings create", "settings"),
+              hasPermission: this.$can("settings index", "settings"),
             },
             // {
             //   key: "vision",

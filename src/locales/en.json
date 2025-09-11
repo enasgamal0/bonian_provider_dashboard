@@ -95,6 +95,7 @@
       "show": "Show Message Data"
     },
     "AppContent": {
+      "newTitle": "Terms and Policy",
       "addresses": "Addresses Management",
       "title": "Content Management",
       "defination_price": "Flexible price definition text",
