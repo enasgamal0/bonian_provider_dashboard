@@ -2348,6 +2348,7 @@
   },
 
   "VALIDATION": {
+    "loginFailedOTP": "You should Verify your account first",
     "main_section": "Main Category Field is Required",
     "sort": "Sort Field is Required",
     "publish_start_date": "Publish Start Date Field is Required",

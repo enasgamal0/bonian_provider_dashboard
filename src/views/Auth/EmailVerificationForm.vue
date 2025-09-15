@@ -169,9 +169,15 @@ export default {
       // Start:: Append Request Data
       REQUEST_DATA.append("email", this.getAuthenticatedUserData.email);
       // End:: Append Request Data
-      const token = localStorage.getItem(
-        "bonian_provider_dashboard_forget_pass_token"
-      );
+
+      let token;
+      if (this.verificationType == "register") {
+        token = localStorage.getItem("token_not_verified");
+      } else {
+        token = localStorage.getItem(
+          "bonian_provider_dashboard_forget_pass_token"
+        );
+      }
       try {
         let res = await this.$axios({
           method: "POST",
@@ -220,9 +226,6 @@ export default {
 
       const REQUEST_DATA = new FormData();
       // Start:: Append Request Data
-      this.$axios.defaults.headers.common["Authorization"] =
-        "Bearer " +
-        localStorage.getItem("bonian_provider_dashboard_forget_pass_token");
       REQUEST_DATA.append(
         "code",
         this.firstNumber +
@@ -230,10 +233,13 @@ export default {
           this.thirdNumber +
           this.fourthNumber
       );
-      REQUEST_DATA.append("is_changed", 1);
       // Start:: Append Request Data
 
       if (this.verificationType == "reset-password") {
+        REQUEST_DATA.append("is_changed", 1);
+        this.$axios.defaults.headers.common["Authorization"] =
+          "Bearer " +
+          localStorage.getItem("bonian_provider_dashboard_forget_pass_token");
         try {
           let res = await this.$axios({
             method: "POST",
@@ -249,6 +255,41 @@ export default {
           this.clearFormInputs();
           localStorage.removeItem("bonian_provider_dashboard_email");
           this.$router.replace("/reset-password");
+        } catch (error) {
+          this.isWaitingRequest = false;
+          this.$message.error(error.response.data.message);
+        }
+      } else if (this.verificationType == "register") {
+        this.$axios.defaults.headers.common["Authorization"] =
+          "Bearer " + localStorage.getItem("token_not_verified");
+        try {
+          await this.$axios({
+            method: "POST",
+            url: `auth/verify-otp`,
+            data: REQUEST_DATA,
+          });
+          this.isWaitingRequest = false;
+          localStorage.setItem(
+            "bonian_admin_roles",
+            localStorage.getItem("bonian_admin_roles_not_verified")
+          );
+          this.setAuthenticatedUserData({
+            id: localStorage.getItem("id_not_verified"),
+            name: localStorage.getItem("name_not_verified"),
+            email: localStorage.getItem("email_not_verified"),
+            token: localStorage.getItem("token_not_verified"),
+            image: localStorage.getItem("image_not_verified"),
+          });
+          localStorage.removeItem("bonian_admin_roles_not_verified");
+          localStorage.removeItem("id_not_verified");
+          localStorage.removeItem("email_not_verified");
+          localStorage.removeItem("token_not_verified");
+          localStorage.removeItem("name_not_verified");
+          localStorage.removeItem("image_not_verified");
+          this.$message.success(this.$t("MESSAGES.verifiedSuccessfully"));
+          this.clearFormInputs();
+          this.$router.replace("/");
+          location.reload();
         } catch (error) {
           this.isWaitingRequest = false;
           this.$message.error(error.response.data.message);
