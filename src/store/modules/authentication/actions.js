@@ -18,7 +18,7 @@ export default {
       localStorage.removeItem("bonian_provider_dashboard_user_id");
       localStorage.removeItem("bonian_provider_dashboard_user_token");
       localStorage.removeItem("bonian_provider_dashboard_userName");
-      localStorage.removeItem("bonian_admin_roles");
+      localStorage.removeItem("bonian_provider_roles");
       router.replace("/");
       location.reload();
     } catch (error) {

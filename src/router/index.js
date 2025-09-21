@@ -3096,7 +3096,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresPermission) {
     const { action, subject } = to.meta.requiresPermission;
     const storedPermissions = JSON.parse(
-      localStorage.getItem("bonian_admin_roles")
+      localStorage.getItem("bonian_provider_roles")
     )?.permissions;
 
     if (

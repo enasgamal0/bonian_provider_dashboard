@@ -270,8 +270,8 @@ export default {
           });
           this.isWaitingRequest = false;
           localStorage.setItem(
-            "bonian_admin_roles",
-            localStorage.getItem("bonian_admin_roles_not_verified")
+            "bonian_provider_roles",
+            localStorage.getItem("bonian_provider_roles_not_verified")
           );
           this.setAuthenticatedUserData({
             id: localStorage.getItem("id_not_verified"),
@@ -280,7 +280,7 @@ export default {
             token: localStorage.getItem("token_not_verified"),
             image: localStorage.getItem("image_not_verified"),
           });
-          localStorage.removeItem("bonian_admin_roles_not_verified");
+          localStorage.removeItem("bonian_provider_roles_not_verified");
           localStorage.removeItem("id_not_verified");
           localStorage.removeItem("email_not_verified");
           localStorage.removeItem("token_not_verified");

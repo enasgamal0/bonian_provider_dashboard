@@ -144,11 +144,11 @@ export default {
 
         if (res.data.data.user?.is_verified) {
           localStorage.setItem(
-            "bonian_admin_roles",
+            "bonian_provider_roles",
             JSON.stringify(res.data.data.user)
           );
 
-          console.log(JSON.parse(localStorage.getItem("bonian_admin_roles")));
+          console.log(JSON.parse(localStorage.getItem("bonian_provider_roles")));
           // Start:: Set Authed User Data
           this.setAuthenticatedUserData({
             id: res.data.data.user.id,
@@ -164,7 +164,7 @@ export default {
           location.reload();
         } else {
           localStorage.setItem(
-            "bonian_admin_roles_not_verified",
+            "bonian_provider_roles_not_verified",
             JSON.stringify(res.data.data.user)
           );
           localStorage.setItem(
