@@ -848,6 +848,7 @@ form {
               .ql-header {
                 color: var(--main_theme_clr);
                 .ql-picker-label {
+                  color: var(--main_theme_clr);
                   &:hover {
                     color: var(--main_theme_clr);
                   }
@@ -859,7 +860,8 @@ form {
                 .ql-picker-options {
                   border: none;
                   border-radius: 8px;
-                  background-color: var(--soft_main_theme_clr);
+                  // background-color: var(--soft_main_theme_clr);
+                  background-color: white;
                   .ql-picker-item {
                     color: var(--theme_text_clr);
                     &:hover {

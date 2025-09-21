@@ -2395,7 +2395,8 @@ form .input_wrapper.top_label.text_editor .quillWrapper .ql-toolbar .ql-formats 
 form .input_wrapper.top_label.text_editor .quillWrapper .ql-toolbar .ql-formats .ql-header .ql-picker-options {
   border: none;
   border-radius: 8px;
-  background-color: var(--soft_main_theme_clr);
+  /* background-color: var(--soft_main_theme_clr); */
+  background-color: white;
 }
 form .input_wrapper.top_label.text_editor .quillWrapper .ql-toolbar .ql-formats .ql-header .ql-picker-options .ql-picker-item {
   color: var(--theme_text_clr);
