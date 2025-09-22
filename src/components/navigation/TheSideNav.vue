@@ -1079,7 +1079,8 @@
       </div> -->
       <!-- End:: app settings Route -->
       <!-- Start:: Side Nav Routes -->
-      <div class="side_routes_wrapper" v-if="$can('settings index', 'settings')">
+      <!-- v-if="$can('settings index', 'settings')" -->
+      <div class="side_routes_wrapper">
         <a-menu
           style="width: 100%"
           mode="vertical"
@@ -1353,13 +1354,15 @@ export default {
               key: "termsAndConditions",
               title: this.$t("SIDENAV.AppContent.termsAndConditions"),
               route: "/app-content/terms",
-              hasPermission: this.$can("settings index", "settings"),
+              hasPermission: true,
+              // hasPermission: this.$can("settings index", "settings"),
             },
             {
               key: "privacyPolicy",
               title: this.$t("SIDENAV.AppContent.privacyPolicy"),
               route: "/app-content/policy",
-              hasPermission: this.$can("settings index", "settings"),
+              hasPermission: true,
+              // hasPermission: this.$can("settings index", "settings"),
             },
             // {
             //   key: "vision",
