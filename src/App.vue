@@ -44,6 +44,15 @@ export default {
   },
 
   created() {
+    // Get Query if logout, remove token local Storage
+    const logoutQuery = this.$route.query.logout;
+    if (logoutQuery) {
+      localStorage.removeItem("bonian_provider_dashboard_user_id");
+      localStorage.removeItem("bonian_provider_dashboard_user_token");
+      localStorage.removeItem("bonian_provider_dashboard_userName");
+      localStorage.removeItem("bonian_provider_roles");
+      this.$router.go(0);
+    }
     // this.getData();
     this.readAllNotifications();
 
