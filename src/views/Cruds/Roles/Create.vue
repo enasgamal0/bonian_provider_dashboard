@@ -274,7 +274,7 @@ export default {
         this.$router.push({ path: "/roles/all" });
       } catch (error) {
         this.isWaitingRequest = false;
-        this.$message.error(error.response.data.errors.message);
+        this.$message.error(error.response.data?.message);
       }
     },
     // End:: Submit Form
