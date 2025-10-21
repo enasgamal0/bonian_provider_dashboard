@@ -2,7 +2,7 @@
   <div class="crud_form_wrapper">
     <!-- Start:: Title -->
     <div class="form_title_wrapper">
-      <h4>{{ $t("PLACEHOLDERS.showOrder") }}</h4>
+      <h4>{{ $t("PLACEHOLDERS.orderDetails") }}</h4>
     </div>
     <div class="col-12 text-end">
       <v-btn @click="$router.go(-1)" style="color: #1b706f">
@@ -11,542 +11,356 @@
     </div>
     <!-- End:: Title -->
 
-    <!-- Start:: Single Step Form Content -->
+    <!-- Start:: Order Details Content -->
     <div class="single_step_form_content_wrapper">
       <form @submit.prevent="validateFormInputs">
         <div class="row">
-          <!-- Start:: Image Upload Input -->
-          <!-- <base-image-upload-input
-            col="12"
-            identifier="admin_image"
-            :preSelectedImage="data.image.path"
-            :placeholder="$t('PLACEHOLDERS.productImg')"
-            @selectImage="selectImage"
-            disabled
-          /> -->
-          <!-- End:: Image Upload Input -->
-          <h2>{{ $t("PLACEHOLDERS.showOrder") }}</h2>
-          <base-input
-            col="4"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.orderNum')"
-            v-model.trim="data.orderNum"
-            disabled
-          />
-          <!-- End:: Name Input -->
-
-          <!-- Start:: Name Input -->
-          <base-input
-            col="4"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.orderCreate')"
-            v-model.trim="data.orderCreate"
-            disabled
-          />
-          <!-- Start:: Status Input -->
-          <base-input
-            col="4"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.orderStatus')"
-            v-model="data.status"
-            disabled
-          />
-          <base-input
-            col="4"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.excuteAt')"
-            v-model="data.excuteAt"
-            disabled
-          />
-          <div
-            class="col-4"
-            v-for="(time, index) in data.excutetime"
-            :key="index"
-          >
+          <!-- رقم الطلب -->
+          <div class="col-md-6">
             <base-input
               col="12"
               type="text"
-              :placeholder="$t('PLACEHOLDERS.excutetime')"
-              v-model.trim="time.name"
+              :placeholder="$t('PLACEHOLDERS.serialNumber')"
+              v-model="data.serial_number"
+              disabled
             />
           </div>
-          <h2>{{ $t("PLACEHOLDERS.unitData") }}</h2>
 
-          <base-input
-            col="4"
-            type="text"
-            :placeholder="$t('SIDENAV.GoldenOrder.unitName')"
-            v-model.trim="data.unit_name"
-            disabled
-          />
-          <base-input
-            col="4"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.unitSpace')"
-            v-model.trim="data.unitSpace"
-            disabled
-          />
-          <base-input
-            col="4"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.secret_number')"
-            v-model.trim="data.secret_number"
-            disabled
-          />
-          <div v-if="data.additions?.length">
+          <!-- تاريخ التنفيذ -->
+          <div class="col-md-6">
+            <base-input
+              col="12"
+              type="text"
+              :placeholder="$t('PLACEHOLDERS.executionDate')"
+              v-model="data.date"
+              disabled
+            />
+          </div>
+
+          <!-- المدينة -->
+          <div class="col-md-6">
+            <base-input
+              col="12"
+              type="text"
+              :placeholder="$t('PLACEHOLDERS.city')"
+              v-model="data.city"
+              disabled
+            />
+          </div>
+
+          <!-- الحي -->
+          <div class="col-md-6" v-if="data.district">
+            <base-input
+              col="12"
+              type="text"
+              :placeholder="$t('PLACEHOLDERS.district')"
+              v-model="data.district"
+              disabled
+            />
+          </div>
+
+          <!-- التصنيف الفرعي -->
+          <div class="col-md-6">
+            <base-input
+              col="12"
+              type="text"
+              :placeholder="$t('PLACEHOLDERS.subCategory')"
+              v-model="data.sub_category"
+              disabled
+            />
+          </div>
+
+          <!-- الأسئلة والإجابات -->
+          <div class="col-12" v-if="data.questions && data.questions.length">
+            <h5 class="section-title">
+              {{ $t("PLACEHOLDERS.questionsAndAnswers") }}
+            </h5>
             <div
-              class="col-12"
-              v-for="(item, index) in data.additions"
-              :key="item"
+              v-for="(question, index) in data.questions"
+              :key="index"
+              class="question-item p-3"
             >
-              <v-chip>{{ $t("PLACEHOLDERS.additions") + (index + 1) }}</v-chip>
-              <base-input
-                col="12"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.additionName')"
-                v-model.trim="item.name_addition"
-                disabled
-              />
-              <base-input
-                col="12"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.additionCount')"
-                v-model.trim="item.count_addition"
-                disabled
-              />
-              <base-input
-                col="12"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.servicePriceForAdd')"
-                v-model.trim="item.price"
-                disabled
-              />
+              <div class="row">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">{{
+                    $t("PLACEHOLDERS.question")
+                  }}</label>
+                  <p class="answer-text">{{ question.question }}</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">{{
+                    $t("PLACEHOLDERS.answer")
+                  }}</label>
+                  <p class="answer-text">{{ question.answer }}</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <h2>{{ $t("PLACEHOLDERS.serviceData") }}</h2>
-
-          <base-input
-            col="4"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.serviceName')"
-            v-model.trim="data.serviceName"
-            disabled
-          />
-          <base-input
-            col="4"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.servicePrice')"
-            v-model.trim="data.servicePrice"
-            disabled
-          />
-          <!-- <base-input
-            col="4"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.price_additions')"
-            v-model.trim="data.price_additions"
-            disabled
-          /> -->
-
-          <div class="col-12" v-if="data.products?.length">
-            <h2>{{ $t("PLACEHOLDERS.productData") }}</h2>
-
-            <div v-for="(product, index) in data.products" :key="product">
-              <v-chip>{{ $t("PLACEHOLDERS.product") + (index + 1) }}</v-chip>
-              <base-input
-                col="12"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.productName')"
-                v-model.trim="product.name_product"
-                disabled
-              />
-
-              <base-input
-                col="12"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.productPrice')"
-                v-model.trim="product.price"
-                disabled
-              />
-              <base-input
-                col="12"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.quantatyy')"
-                v-model.trim="product.count_product"
-                disabled
-              />
-            </div>
-          </div>
-          <div class="col-12" v-if="data.addServices?.length">
-            <h2>{{ $t("PLACEHOLDERS.addServices") }}</h2>
-
-            <div v-for="(service, index) in data.addServices" :key="service">
-              <v-chip>{{ $t("PLACEHOLDERS.service") + (index + 1) }}</v-chip>
-              <base-input
-                col="12"
-                type="textarea"
-                :placeholder="$t('PLACEHOLDERS.addServicesDecs')"
-                v-model.trim="service.description"
-                disabled
-              />
-
-              <base-input
-                col="12"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.addServicesPrice')"
-                v-model.trim="service.price"
-                disabled
-              />
-              <base-input
-                col="12"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.addServicesStatus')"
-                v-model.trim="service.status"
-                disabled
-              />
-            </div>
+          <!-- الملاحظات -->
+          <div class="col-12" v-if="data.note">
+            <base-input
+              col="12"
+              type="textarea"
+              :placeholder="$t('PLACEHOLDERS.notes')"
+              v-model="data.note"
+              disabled
+            />
           </div>
 
-          <h2>{{ $t("PLACEHOLDERS.priceData") }}</h2>
-          <base-input
-            col="6"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.totalePrce')"
-            v-model="data.totalePrce"
-            disabled
-          />
-          <base-input
-            col="6"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.totalTax')"
-            v-model="data.totalTax"
-            disabled
-          />
-
-          <base-input
-            col="6"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.discount')"
-            v-model="data.discount"
-            disabled
-          />
-          <base-input
-            col="6"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.discountValue')"
-            v-model="data.discountValue"
-            disabled
-          />
-
-          <base-input
-            col="6"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.orderPriceAfterDiscount')"
-            v-model="data.totalOrderPrice"
-            disabled
-          />
-
-          <base-input
-            col="6"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.totalOrderPrice')"
-            v-model="data.orderPriceAfterDiscount"
-            disabled
-          />
-
-          <h2 v-if="data.cleaners && data.cleaners.length">
-            {{ $t("PLACEHOLDERS.team") }}
-          </h2>
-
+          <!-- المرفقات -->
           <div
-            v-if="data.cleaners && data.cleaners.length"
-            class="row"
-            v-for="cleaner in data.cleaners"
-            :key="cleaner"
+            class="col-12 mt-4"
+            v-if="data.attachments && data.attachments.length"
           >
-            <base-input
-              col="6"
-              type="text"
-              :placeholder="$t('PLACEHOLDERS.name')"
-              v-model="cleaner.name"
-              disabled
-            />
-            <base-input
-              col="6"
-              type="text"
-              :placeholder="$t('PLACEHOLDERS.phoneNumber')"
-              v-model="cleaner.whattsapp"
-              disabled
-            />
-          </div>
-
-          <div
-            class="col-12"
-            v-for="method in data.PaymentMethods"
-            :key="method"
-          >
-            <base-input
-              col="12"
-              type="text"
-              :placeholder="$t('PLACEHOLDERS.PaymentMethods')"
-              v-model="method.payment_method"
-              disabled
-            />
-            <base-input
-              col="12"
-              type="text"
-              :placeholder="$t('PLACEHOLDERS.PaymentMoney')"
-              v-model="method.money"
-              disabled
-            />
-            <base-input
-              v-if="
-                data.back &&
-                data.PaymentMethods &&
-                data.PaymentMethods.length < 2
-              "
-              col="12"
-              type="text"
-              :placeholder="$t('PLACEHOLDERS.back')"
-              v-model="data.back"
-              disabled
-            />
-            <hr />
-          </div>
-
-          <h2>{{ $t("PLACEHOLDERS.userData") }}</h2>
-
-          <base-input
-            col="6"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.clientName')"
-            v-model="data.clientName"
-            disabled
-          />
-          <base-input
-            col="6"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.clientPhone')"
-            v-model="data.clientPhone"
-            disabled
-          />
-          <div v-if="data.cleaners">
-            <h2>{{ $t("PLACEHOLDERS.employeeRate") }}</h2>
-
-            <div class="d-flex" v-for="cleaner in data.cleaners">
-              <base-input
-                col="6"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.name')"
-                v-model="cleaner.name"
-                disabled
-              />
-              <base-input
-                col="6"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.whatsapp')"
-                v-model="cleaner.whatsapp"
-                disabled
-              />
+            <h6
+              class="section-title mb-5"
+              style="color: #1b706f; font-size: 16px"
+            >
+              {{ $t("PLACEHOLDERS.attachments") }}
+            </h6>
+            <div class="attachments-grid">
+              <div
+                v-for="(attachment, index) in data.attachments"
+                :key="index"
+                class="attachment-item m-3"
+                style="cursor: pointer"
+              >
+                <img
+                  :src="attachment.attachment"
+                  :alt="'Attachment ' + (index + 1)"
+                  style="max-height: 200px; max-width: 200px"
+                  @click="openImagePreview(attachment.attachment)"
+                />
+              </div>
             </div>
           </div>
 
-          <div class="col-12" v-if="data.rate?.rate_service">
-            <h2>{{ $t("PLACEHOLDERS.rates") }}</h2>
-            <h6 class="text-center">{{ $t("PLACEHOLDERS.serviceRate") }}</h6>
-            <rating-preview :rate="data.rate?.rate_service" />
-            <h6 class="text-center">{{ $t("PLACEHOLDERS.matsRate") }}</h6>
-            <rating-preview :rate="data.rate?.rate_materials" />
-            <h6 class="text-center">{{ $t("PLACEHOLDERS.employeeRate") }}</h6>
-            <rating-preview :rate="data.rate?.rate_cleaners" />
-            <h6 class="text-center">{{ $t("PLACEHOLDERS.appRate") }}</h6>
-            <rating-preview :rate="data.rate?.rate_application" />
-            <label class="form-label mt-5 comment_label">
-              {{ $t("PLACEHOLDERS.comment") }}
-            </label>
-            <div
-              col="12"
-              type="text"
-              v-html="data.rate.comment.replace(/\n/g, '<br>')"
-              disabled
-              class="comment"
-            ></div>
+          <!-- زر عرض تفاصيل المستخدم -->
+          <div class="col-12 mt-4 text-center">
+            <v-btn
+              @click="showPaymentDialog = true"
+              color="#1b706f"
+              size="large"
+              class="view-user-btn"
+            >
+              <i class="fas fa-user-circle me-2"></i>
+              {{ $t("PLACEHOLDERS.viewUserDetails") }}
+            </v-btn>
           </div>
-
-          <base-input
-            v-if="data.cancelReason"
-            col="6"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.cancelReason')"
-            v-model="data.cancelReason"
-            disabled
-          />
-
-          <base-input
-            v-if="data.cancelDate"
-            col="6"
-            type="text"
-            :placeholder="$t('PLACEHOLDERS.cancelDate')"
-            v-model="data.cancelDate"
-            disabled
-          />
+          <div class="col-12 mt-4 text-center">
+            <v-btn
+              @click="showPaymentDialog = true"
+              color="#1b706f"
+              size="large"
+              class="view-user-btn"
+            >
+              <i class="fas fa-user-circle me-2"></i>
+              {{ $t("PLACEHOLDERS.viewUserDetails") }}
+            </v-btn>
+          </div>
         </div>
       </form>
     </div>
-    <!-- END:: Single Step Form Content -->
+    <!-- End:: Order Details Content -->
+
+    <!-- Start:: Payment Dialog -->
+    <v-dialog v-model="showPaymentDialog" max-width="500">
+      <v-card>
+        <v-card-title
+          class="text-h5 text-center py-4"
+          style="background-color: #1b706f; color: white"
+        >
+          {{ $t("PLACEHOLDERS.paymentRequired") }}
+        </v-card-title>
+
+        <v-card-text class="py-5 px-4">
+          <div class="text-center mb-4">
+            <i
+              class="fas fa-info-circle"
+              style="font-size: 48px; color: #1b706f"
+            ></i>
+          </div>
+          <p class="text-center payment-message">
+            {{ $t("PLACEHOLDERS.paymentMessage", { amount: paymentAmount }) }}
+          </p>
+
+          <div class="payment-options mt-4">
+            <v-btn
+              block
+              size="large"
+              color="#1b706f"
+              class="mb-2"
+              @click="viewProfile"
+            >
+              <i class="fas fa-user me-2"></i>
+              {{ $t("PLACEHOLDERS.viewProfile") }}
+            </v-btn>
+
+            <v-btn
+              block
+              size="large"
+              color="#1b706f"
+              variant="outlined"
+              @click="openChat"
+            >
+              <i class="fas fa-comments me-2"></i>
+              {{ $t("PLACEHOLDERS.openChat") }}
+            </v-btn>
+          </div>
+        </v-card-text>
+
+        <v-card-actions class="px-4 pb-4">
+          <v-btn
+            block
+            size="large"
+            @click="showPaymentDialog = false"
+            variant="text"
+          >
+            {{ $t("PLACEHOLDERS.cancel") }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- End:: Payment Dialog -->
+
+    <!-- Start:: Image Preview Dialog -->
+    <v-dialog v-model="imagePreviewDialog" max-width="800">
+      <v-card>
+        <v-card-actions class="justify-end pa-2">
+          <!-- <v-btn icon @click="imagePreviewDialog = false" variant="text">
+            <i class="fas fa-times"></i>
+          </v-btn> -->
+        </v-card-actions>
+        <v-card-text class="pa-0">
+          <img :src="previewImageUrl" style="width: 100%; height: auto" />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- End:: Image Preview Dialog -->
   </div>
 </template>
 
 <script>
-// import RatingPreview from "@/components/ui/RatingPreview.vue";
-import RatingPreview from "../../../components/ui/RatingPreview.vue";
 export default {
-  components: { RatingPreview },
-  name: "showCity",
-  comments: {
-    RatingPreview,
-  },
+  name: "ShowOrderDetails",
+
   data() {
     return {
       // Start:: Loader Control Data
       isWaitingRequest: false,
       // End:: Loader Control Data
 
-      // Start:: Data Collection To Send
+      // Start:: Dialog Control
+      showPaymentDialog: false,
+      imagePreviewDialog: false,
+      previewImageUrl: null,
+      // End:: Dialog Control
+
+      // Start:: Payment Data
+      paymentAmount: 0, // سيتم جلبه من API
+      // End:: Payment Data
+
+      // Start:: Order Data
       data: {
-        totalePrce: null,
-        totalTax: null,
-        totalOrderPrice: null,
-        discount: null,
-        discountValue: null,
-        orderPriceAfterDiscount: null,
-        comment: null,
-        orderNum: null,
-        orderCreate: null,
-        status: null,
-        unit_name: null,
-        userName: null,
-        userType: null,
-        mangement: null,
-        secret_number: null,
-        products: null,
-        serviceName: null,
-        servicePrice: null,
-        rate: null,
-        manegerNmae: null,
-        excuteAt: null,
-        orderCode: "",
-        mainC: null,
-        clientName: null,
-        back: null,
-        clientPhone: null,
-        status: null,
-        cancelReason: null,
-        cancelDate: null,
-        subC: null,
-        addServices: null,
-        price_additions: null,
-        PaymentMethods: null,
-        descProd: null,
-        excutetime: [],
-        wood: null,
-        countryFact: null,
-        quantatyWanted: null,
-        active: null,
-        image: {
-          path: null,
-          file: null,
-        },
-        nameAr: null,
-        nameEn: null,
-        region_id: null,
-        active: null,
-        cleaners: [],
+        serial_number: null,
+        date: null,
+        note: null,
+        city: null,
+        district: null,
+        sub_category: null,
+        questions: [],
+        attachments: [],
+        user: null,
       },
-      regions: [],
-      // End:: Data Collection To Send
+      // End:: Order Data
     };
   },
 
-  computed: {},
-
   methods: {
-    // start show data
-    async showCity() {
+    // Start:: Fetch Order Details
+    async fetchOrderDetails() {
+      this.isWaitingRequest = true;
       try {
-        let res = await this.$axios({
+        const res = await this.$axios({
           method: "GET",
-          url: `orders/${this.$route.params.id}`,
+          url: `orders/show/${this.$route.params.id}`,
         });
-        this.data.status = res.data.data.Order?.status;
-        this.data.orderNum = res.data.data.Order?.number_order;
-        this.data.orderCreate = res.data.data.Order?.created_at;
-        this.data.status = res.data.data.Order?.status;
-        this.data.excuteAt = res.data.data.Order?.date;
-        this.data.excutetime = res.data.data.Order.time?.map((ele, index) => ({
-          id: index,
-          name: ele,
-        }));
-        this.data.unit_name = res.data.data.Order?.unit_name;
-        this.data.unitSpace = res.data.data.Order?.unit_capacity;
-        this.data.additions = res.data.data.Order?.additions;
-        this.data.secret_number = res.data.data.Order?.secret_number;
-        this.data.serviceName = res.data.data.Order?.service_name;
-        this.data.servicePrice = res.data.data.Order?.service_price;
-        this.data.products = res.data.data.Order?.products;
-        this.data.addServices = res.data.data.Order?.AdditionServices;
-        this.data.totalePrce = res.data.data.Order?.order_price;
-        this.data.totalTax = res.data.data.Order?.tax_value;
-        this.data.totalOrderPrice = res.data.data.Order?.total;
-        this.data.discount = res.data.data.Order?.percentage;
-        this.data.discountValue = res.data.data.Order?.price_percentage;
-        this.data.orderPriceAfterDiscount = res.data.data.Order?.total_amount;
-        this.data.PaymentMethods = res.data.data.Order?.OrderPayment;
-        this.data.back = res.data.data.Order?.package_name;
-        this.data.cleaners = res.data.data.Order?.cleaners;
-        this.data.clientName = res.data.data.Order?.user_name;
-        this.data.clientPhone = res.data.data.Order?.user_mobile;
-        this.data.rate = res.data.data.Order?.rate;
-        this.data.cancelReason = res.data.data.Order?.reason;
-        this.data.cancelDate = res.data.data.Order?.reason_time;
+
+        const orderData = res.data.data.order;
+
+        this.data.serial_number = orderData.serial_number;
+        this.data.date = orderData.date;
+        this.data.note = orderData.note;
+        this.data.city = orderData.city?.name;
+        this.data.district = orderData.district?.name;
+        this.data.sub_category = orderData.sub_category?.name;
+        this.data.questions = orderData.questions || [];
+        this.data.attachments = orderData.attachments || [];
+        this.data.user = orderData.user;
       } catch (error) {
-        this.loading = false;
-        console.log(error.response.data.message);
+        console.error("Error fetching order details:", error);
+        this.$toast.error(
+          error.response?.data?.message || this.$t("MESSAGES.errorFetchingData")
+        );
+      } finally {
+        this.isWaitingRequest = false;
       }
     },
-    // end show data
-    async getRegions() {
+    // End:: Fetch Order Details
+
+    // Start:: Fetch Payment Amount
+    async fetchPaymentAmount() {
       try {
-        let res = await this.$axios({
+        const res = await this.$axios({
           method: "GET",
-          url: `regions`,
-          params: {
-            is_active: 1,
-          },
+          url: "settings/payment-amount", // API endpoint لجلب مبلغ الدفع
         });
-        // console.log("Cities =>", res.data.data);
-        this.regions = res.data.data;
+        this.paymentAmount = res.data.data.amount;
       } catch (error) {
-        console.log(error.response.data.message);
+        console.error("Error fetching payment amount:", error);
+        this.paymentAmount = 0;
       }
     },
+    // End:: Fetch Payment Amount
+
+    // Start:: View Profile (Navigate to Payment)
+    viewProfile() {
+      this.$router.push({
+        name: "Payment",
+        params: {
+          orderId: this.$route.params.id,
+          action: "profile",
+        },
+      });
+    },
+    // End:: View Profile
+
+    // Start:: Open Chat (Navigate to Payment)
+    openChat() {
+      this.$router.push({
+        name: "Payment",
+        params: {
+          orderId: this.$route.params.id,
+          action: "chat",
+        },
+      });
+    },
+    // End:: Open Chat
+
+    // Start:: Open Image Preview
+    openImagePreview(imageUrl) {
+      this.previewImageUrl = imageUrl;
+      this.imagePreviewDialog = true;
+    },
+    // End:: Open Image Preview
   },
 
   created() {
     // Start:: Fire Methods
-    this.showCity();
+    this.fetchOrderDetails();
+    this.fetchPaymentAmount();
     // End:: Fire Methods
   },
 };
 </script>
-<style>
-.comment {
-  border: 1px solid #1b706f;
-  padding: 15px;
-  border-radius: 6px;
-}
-.comment_label {
-  color: #1b706f;
-  font-size: 16px;
-}
-</style>

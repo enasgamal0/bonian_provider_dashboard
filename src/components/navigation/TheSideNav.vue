@@ -1013,6 +1013,30 @@
       </div> -->
       <!-- Start:: rates Route -->
 
+      <!-- Start:: Orders and Quotations Management Route -->
+       <div
+        class="home_route"
+        @click="$emit('fireToggleNavDrawerEmit')"
+        v-if="
+          $can('orders index', 'orders')
+        "
+      >
+        <router-link to="/orders/all">
+          <span class="route_icon">
+            <img
+              src="@/assets/media/icons/ui_icons/box.svg"
+              alt="icon"
+              width="40"
+              height="40"
+            />
+          </span>
+          <span class="route_text">
+            {{ $t("PLACEHOLDERS.orders") }}
+          </span>
+        </router-link>
+      </div>
+      <!-- End:: Orders and Quotations Management Route -->
+
       <!-- Start:: notifications Route -->
       <!-- <div
         class="home_route"

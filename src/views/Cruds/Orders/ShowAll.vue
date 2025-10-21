@@ -19,37 +19,24 @@
         <div class="filter_form_wrapper">
           <form @submit.prevent="submitFilterForm">
             <div class="row justify-content-center align-items-center w-100">
-              <!-- Start:: Name Input -->
               <base-input
-                col="6"
+                col="4"
                 type="text"
                 :placeholder="$t('PLACEHOLDERS.orderNum')"
                 v-model.trim="filterOptions.orderNum"
               />
-              <base-input
-                col="6"
-                type="text"
-                :placeholder="$t('PLACEHOLDERS.mobileClient')"
-                v-model.trim="filterOptions.mobileClient"
-              />
-              <!-- End:: Name Input -->
-
-              <!-- Start:: Status Input -->
               <base-select-input
-                col="6"
-                :optionsList="users"
-                :placeholder="$t('PLACEHOLDERS.clientName')"
-                v-model="filterOptions.clientName"
+                col="4"
+                :optionsList="subCategories"
+                :placeholder="$t('PLACEHOLDERS.sub_service_type')"
+                v-model="filterOptions.sub_category_id"
               />
-              <!-- End:: Status Input -->
-              <!-- Start:: Status Input -->
-              <base-select-input
-                col="6"
-                :optionsList="activeStatuses"
-                :placeholder="$t('PLACEHOLDERS.orderStatus')"
-                v-model="filterOptions.status"
+              <base-picker-input
+                col="4"
+                type="date"
+                :placeholder="$t('PLACEHOLDERS.date')"
+                v-model.trim="filterOptions.date"
               />
-              <!-- End:: Status Input -->
             </div>
 
             <div class="btns_wrapper">
@@ -311,8 +298,6 @@
               </v-card-title>
 
               <form class="w-100">
-                <!-- <base-select-input col="12" :optionsList="availabilityStatuses" :placeholder="$t('PLACEHOLDERS.activate')"
-                  v-model="filterOptions.isAvailable" /> -->
                 <base-input
                   col="12"
                   rows="3"
@@ -509,16 +494,15 @@ export default {
       addData: false,
       serviceDesc: null,
       servicePrice: null,
+      subCategories: [],
       // End:: Loading Data
 
       // Start:: Filter Data
       filterFormIsActive: false,
       filterOptions: {
         orderNum: null,
-        mobileClient: null,
-        clientName: null,
-        status: null,
-        mangement: null,
+        sub_category_id: null,
+        date: null,
       },
       allProviders: [],
       allStatus: [],
@@ -537,25 +521,13 @@ export default {
         },
         {
           text: this.$t("PLACEHOLDERS.orderNum"),
-          value: "number_order",
+          value: "serial_number",
           align: "center",
           sortable: false,
         },
         {
-          text: this.$t("PLACEHOLDERS.clientName"),
-          value: "client_name",
-          align: "center",
-          sortable: false,
-        },
-        {
-          text: this.$t("TABLES.subscriptions.Totalorder"),
-          value: "OrderBudget",
-          align: "center",
-          sortable: false,
-        },
-        {
-          text: this.$t("PLACEHOLDERS.orderArea"),
-          value: "Area",
+          text: this.$t("PLACEHOLDERS.sub_service_type"),
+          value: "sub_category.name",
           align: "center",
           sortable: false,
         },
@@ -565,31 +537,6 @@ export default {
           align: "center",
           sortable: false,
         },
-        {
-          text: this.$t("PLACEHOLDERS.excuteAt"),
-          value: "date",
-          align: "center",
-          sortable: false,
-        },
-        {
-          text: this.$t("PLACEHOLDERS.orderStatus"),
-          value: "status",
-          align: "center",
-          sortable: false,
-        },
-        // {
-        //   text: this.$t("PLACEHOLDERS.registration_otp_status"),
-        //   value: "is_verified",
-        //   align: "center",
-        //   sortable: false,
-        // },
-        // {
-        //   text: this.$t("TABLES.Clients.active"),
-        //   value: "user.is_active",
-        //   align: "center",
-        //   width: "120",
-        //   sortable: false,
-        // },
         {
           text: this.$t("TABLES.Clients.actions"),
           value: "actions",
@@ -772,24 +719,14 @@ export default {
       }
     },
 
-    async getUsers() {
+    async getSubCategories() {
       try {
         let res = await this.$axios({
           method: "GET",
-          url: "clients?page=0&limit=0",
+          url: "sub-categories?page=0&limit=0",
         });
-        this.users = res.data.data;
-      } catch (error) {
-        console.log(error.response.data.message);
-      }
-    },
-    async getManeg() {
-      try {
-        let res = await this.$axios({
-          method: "GET",
-          url: "management?page=0",
-        });
-        this.mangement = res.data.data;
+        console.log(res.data.data);
+        this.subCategories = res.data.data?.data;
       } catch (error) {
         console.log(error.response.data.message);
       }
@@ -806,10 +743,8 @@ export default {
     },
     async resetFilter() {
       this.filterOptions.orderNum = null;
-      this.filterOptions.mobileClient = null;
-      this.filterOptions.clientName = null;
-      this.filterOptions.status = null;
-      this.filterOptions.mangement = null;
+      this.filterOptions.sub_category_id = null;
+      this.filterOptions.date = null;
       if (this.$route.query.page !== "1") {
         await this.$router.push({
           path: "/orders/all",
@@ -838,27 +773,26 @@ export default {
       try {
         let res = await this.$axios({
           method: "GET",
-          url: "orders",
+          url: "orders/all-orders",
           params: {
             page: this.paginations.current_page,
-            number_order: this.filterOptions.orderNum,
-            mobile: this.filterOptions.mobileClient,
-            user_id: this.filterOptions.clientName?.id,
-            status: this.filterOptions.status?.value,
+            serial_number: this.filterOptions.orderNum,
+            date: this.filterOptions.date,
+            sub_category_id: this.filterOptions.sub_category_id?.id,
           },
         });
         this.loading = false;
         // console.log("All Data ==>", res.data.data);
-        res.data.data.forEach((item, index) => {
+        res.data.data?.data?.forEach((item, index) => {
           item.serialNumber =
             (this.paginations.current_page - 1) *
               this.paginations.items_per_page +
             index +
             1;
         });
-        this.tableRows = res.data.data;
-        this.paginations.last_page = res.data.meta.last_page;
-        this.paginations.items_per_page = res.data.meta.per_page;
+        this.tableRows = res.data.data?.data;
+        this.paginations.last_page = res.data?.data?.meta.last_page;
+        this.paginations.items_per_page = res.data?.data?.meta.per_page;
       } catch (error) {
         this.loading = false;
         console.log(error.response.data.message);
@@ -964,8 +898,7 @@ export default {
       this.paginations.current_page = +this.$route.query.page;
     }
     this.setTableRows();
-    this.getUsers();
-    this.getManeg();
+    this.getSubCategories();
     // End:: Fire Methods
   },
 };

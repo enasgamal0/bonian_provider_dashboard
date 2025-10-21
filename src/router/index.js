@@ -51,6 +51,13 @@ import AppRatesHome from "../views/Cruds/AppRates/Home.vue";
 import AllAppRates from "../views/Cruds/AppRates/ShowAll.vue";
 // ============== End:: AppRates Routes
 
+// ============== Start:: Orders Routes
+import OrdersHome from "../views/Cruds/Orders/Home.vue";
+import AllOrders from "../views/Cruds/Orders/ShowAll.vue";
+import ShowOrders from "../views/Cruds/Orders/Show.vue";
+import CreateOrders from "../views/Cruds/Orders/Create.vue";
+// ============== End:: Orders Routes
+
 // ============== Start:: StoreRates Routes
 import StoreRatesHome from "../views/Cruds/StoreRates/Home.vue";
 import AllStoreRates from "../views/Cruds/StoreRates/ShowAll.vue";
@@ -265,12 +272,6 @@ import ShowPackages from "../views/Cruds/Packages/Show.vue";
 import EditPackages from "../views/Cruds/Packages/Edit.vue";
 // ============== End:: Packages Routes
 
-// ============== Start:: orders Routes
-import ordersHome from "../views/Cruds/Orders/Home.vue";
-import Allorders from "../views/Cruds/Orders/ShowAll.vue";
-import Showorders from "../views/Cruds/Orders/Show.vue";
-// ============== End:: orders Routes
-
 // ============== Start:: UserRequests Routes =================
 import UserRequestsHome from "../views/Cruds/UserRequests/Home.vue";
 import AllUserRequests from "../views/Cruds/UserRequests/ShowAll.vue";
@@ -333,12 +334,6 @@ import CreateCustomers from "../views/Cruds/Customers/Create.vue";
 import EditCustomers from "../views/Cruds/Customers/Edit.vue";
 import ShowCustomers from "../views/Cruds/Customers/Show.vue";
 // ================= End:: Customers Routes
-
-//=============== Start:: Order Desiginer Routes
-import OrdersRequestsHome from "../views/Cruds/OrdersRequests/Home.vue";
-import AllOrdersRequests from "../views/Cruds/OrdersRequests/ShowAll.vue";
-import ShowOrdersRequests from "../views/Cruds/OrdersRequests/Show.vue";
-//============== End:: Order Desiginer Routes
 
 // ============== Start:: MainCategories Routes
 import CategoriesHome from "../views/Cruds/MainCategories/Home.vue";
@@ -1065,6 +1060,55 @@ const routes = [
         ],
       },
       // End:: nationalities Config
+      // Start:: orders Routes Config
+      {
+        path: "/orders",
+        name: "OrdersHome",
+        component: OrdersHome,
+        meta: {
+          middleware: [auth],
+        },
+        children: [
+          {
+            path: "all",
+            name: "AllOrders",
+            component: AllOrders,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: "orders index",
+                subject: "orders",
+              },
+            },
+          },
+          {
+            path: "show/:id",
+            name: "ShowOrders",
+            component: ShowOrders,
+            props: true,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: "orders show",
+                subject: "orders",
+              },
+            },
+          },
+          {
+            path: "create",
+            name: "CreateOrders",
+            component: CreateOrders,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: "orders index",
+                subject: "orders",
+              },
+            },
+          },
+        ],
+      },
+      // End:: orders Routes Config
       // Start:: hobbies  Config
       {
         path: "/hobbies",
