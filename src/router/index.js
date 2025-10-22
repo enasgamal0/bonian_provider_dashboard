@@ -58,6 +58,13 @@ import ShowOrders from "../views/Cruds/Orders/Show.vue";
 import CreateOrders from "../views/Cruds/Orders/Create.vue";
 // ============== End:: Orders Routes
 
+// ============== Start:: LiveChat Routes
+import LiveChatHome from "../views/Cruds/LiveChat/Home.vue";
+import AllLiveChat from "../views/Cruds/LiveChat/ShowAll.vue";
+import ShowLiveChat from "../views/Cruds/LiveChat/Show.vue";
+import ChatLiveChat from "../views/Cruds/LiveChat/Chat.vue";
+// ============== End:: LiveChat Routes
+
 // ============== Start:: StoreRates Routes
 import StoreRatesHome from "../views/Cruds/StoreRates/Home.vue";
 import AllStoreRates from "../views/Cruds/StoreRates/ShowAll.vue";
@@ -1095,9 +1102,10 @@ const routes = [
             },
           },
           {
-            path: "create",
+            path: "create/:id",
             name: "CreateOrders",
             component: CreateOrders,
+            props: true,
             meta: {
               middleware: [auth],
               requiresPermission: {
@@ -1109,6 +1117,56 @@ const routes = [
         ],
       },
       // End:: orders Routes Config
+      // Start:: LiveChat Routes Config
+      {
+        path: "/live-chat",
+        name: "LiveChat",
+        component: LiveChatHome,
+        meta: {
+          middleware: [auth],
+        },
+        children: [
+          {
+            path: "all",
+            name: "AllLiveChat",
+            component: AllLiveChat,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: true,
+                subject: true,
+              },
+            },
+          },
+          {
+            path: "show/:id",
+            name: "ShowLiveChat",
+            component: ShowLiveChat,
+            props: true,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: true,
+                subject: true,
+              },
+            },
+          },
+          {
+            path: "chat/:id",
+            name: "ChatLiveChat",
+            component: ChatLiveChat,
+            props: true,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: true,
+                subject: true,
+              },
+            },
+          },
+        ],
+      },
+      // End:: LiveChat Routes Config
       // Start:: hobbies  Config
       {
         path: "/hobbies",

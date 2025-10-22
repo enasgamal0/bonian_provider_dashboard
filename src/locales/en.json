@@ -21,7 +21,20 @@
     "appSettings": "App Settings"
   },
 
+  "LABELS": {
+    "productsAndServices": "Products and Services",
+    "productOrServiceName": "Product or Service Name",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "totalPrice": "Total Price",
+    "actions": "Actions",
+    "expectedDurationDays": "Expected Duration (Days)",
+    "totalOfferPriceSAR": "Total Offer Price (SAR)",
+    "attachments": "Attachments"
+  },
+
   "SIDENAV": {
+    "sendOffer": "Send Quotation",
     "dashboard": "Home",
     "control_admins": "Control Panel Management",
     "placese": "Places Management",
@@ -40,6 +53,11 @@
       "host_financial_reports": "Host Financial Reports",
       "cleaning_financial_report": "Cleaning Companies Financial Reports",
       "financial_reports": "Financial Reports"
+    },
+    "LiveChat": {
+      "title": "Live Chat",
+      "showAll": "All Live Chat",
+      "add": "Start a New Live Chat"
     },
     "notifications": {
       "title": "Notifications",
@@ -90,6 +108,7 @@
       "show": "Show Auction Data"
     },
     "ContactMessages": {
+      "chat": "Chat",
       "title": "Contact Messages",
       "showAll": "All Contact Messages",
       "show": "Show Message Data"
@@ -923,6 +942,8 @@
   },
 
   "STATUS": {
+    "read": "Readed",
+    "unread": "Not Readed",
     "blocked": "Block",
     "no_response": "No Response",
     "used": "Used",
@@ -1144,6 +1165,8 @@
   },
 
   "BUTTONS": {
+    "chat": "Chat",
+    "send_offer": "Send Quotation",
     "back": "Back",
     "view": "View",
     "download": "Download",
@@ -1270,6 +1293,13 @@
   },
 
   "PLACEHOLDERS": {
+    "view_order_details": "Show Order Details",
+    "type_message": "Enter message",
+    "productOrServiceName": "Enter product or service name",
+    "quantity": "Enter quantity",
+    "unitPrice": "Enter unit price",
+    "expectedDuration": "Enter duration in days",
+    "totalOfferPrice": "Enter total offer price",
     "orderDetails": "Order Details",
     "serialNumber": "Order Number",
     "executionDate": "Execution Date",
@@ -1479,7 +1509,7 @@
     "totalOrdars": "Total orders",
     "packageTime": "Package duration",
     "packageClient": "Number of subscribers in the package",
-    "totalPrice": "Total package price (including tax)",
+    "totalPrice": "Total package price",
     "totalPriceNoTax": "Package price (excluding tax)",
     "tax": "VAT Percentage (%)",
     "reference_price": "Reference Price",
@@ -2510,6 +2540,10 @@
   },
 
   "MESSAGES": {
+    "offerSentSuccessfully": "Offer sent successfully",
+    "mustAddProductsOrAttachments": "You must add products in the table or upload attachments (at least one)",
+    "acceptedFormats": "Accepted formats",
+    "imagesPdfExcel": "Images, PDF, Excel",
     "errorFetchingData": "An error occurred while fetching data",
     "paymentSuccess": "Payment completed successfully",
     "paymentFailed": "Payment failed",

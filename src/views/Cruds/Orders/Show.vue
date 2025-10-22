@@ -15,7 +15,6 @@
     <div class="single_step_form_content_wrapper">
       <form @submit.prevent="validateFormInputs">
         <div class="row">
-          <!-- رقم الطلب -->
           <div class="col-md-6">
             <base-input
               col="12"
@@ -26,7 +25,6 @@
             />
           </div>
 
-          <!-- تاريخ التنفيذ -->
           <div class="col-md-6">
             <base-input
               col="12"
@@ -37,7 +35,6 @@
             />
           </div>
 
-          <!-- المدينة -->
           <div class="col-md-6">
             <base-input
               col="12"
@@ -48,7 +45,6 @@
             />
           </div>
 
-          <!-- الحي -->
           <div class="col-md-6" v-if="data.district">
             <base-input
               col="12"
@@ -59,7 +55,6 @@
             />
           </div>
 
-          <!-- التصنيف الفرعي -->
           <div class="col-md-6">
             <base-input
               col="12"
@@ -70,7 +65,6 @@
             />
           </div>
 
-          <!-- الأسئلة والإجابات -->
           <div class="col-12" v-if="data.questions && data.questions.length">
             <h5 class="section-title">
               {{ $t("PLACEHOLDERS.questionsAndAnswers") }}
@@ -97,7 +91,6 @@
             </div>
           </div>
 
-          <!-- الملاحظات -->
           <div class="col-12" v-if="data.note">
             <base-input
               col="12"
@@ -108,7 +101,6 @@
             />
           </div>
 
-          <!-- المرفقات -->
           <div
             class="col-12 mt-4"
             v-if="data.attachments && data.attachments.length"
@@ -136,7 +128,6 @@
             </div>
           </div>
 
-          <!-- زر عرض تفاصيل المستخدم -->
           <div class="col-12 mt-4 text-center">
             <v-btn
               @click="showPaymentDialog = true"
@@ -149,15 +140,15 @@
             </v-btn>
           </div>
           <div class="col-12 mt-4 text-center">
+            <a :href="'/orders/create/' + id">
             <v-btn
-              @click="showPaymentDialog = true"
               color="#1b706f"
               size="large"
               class="view-user-btn"
             >
-              <i class="fas fa-user-circle me-2"></i>
-              {{ $t("PLACEHOLDERS.viewUserDetails") }}
+              {{ $t("BUTTONS.send_offer") }}
             </v-btn>
+            </a>
           </div>
         </div>
       </form>
@@ -258,7 +249,7 @@ export default {
       // End:: Dialog Control
 
       // Start:: Payment Data
-      paymentAmount: 0, // سيتم جلبه من API
+      paymentAmount: 0,
       // End:: Payment Data
 
       // Start:: Order Data
@@ -274,6 +265,7 @@ export default {
         user: null,
       },
       // End:: Order Data
+      id: this.$route.params?.id,
     };
   },
 
@@ -314,7 +306,7 @@ export default {
       try {
         const res = await this.$axios({
           method: "GET",
-          url: "settings/payment-amount", // API endpoint لجلب مبلغ الدفع
+          url: "settings/payment-amount",
         });
         this.paymentAmount = res.data.data.amount;
       } catch (error) {

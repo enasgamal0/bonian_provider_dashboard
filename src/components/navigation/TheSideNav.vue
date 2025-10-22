@@ -1166,6 +1166,28 @@
       </div> -->
       <!-- End:: contacts Route -->
 
+      <!-- Start:: LiveChat Route -->
+      <div
+        class="home_route"
+        @click="$emit('fireToggleNavDrawerEmit')"
+      >
+        <!-- v-if="$can('live-chat index', 'live-chat')" -->
+        <router-link to="/live-chat/all">
+          <span class="route_icon">
+            <img
+              src="@/assets/media/icons/ui_icons/messages.svg"
+              alt="icon"
+              width="40"
+              height="40"
+            />
+          </span>
+          <span class="route_text">
+            {{ $t("SIDENAV.LiveChat.title") }}
+          </span>
+        </router-link>
+      </div>
+      <!-- End:: LiveChat Route -->
+
       <div class="side_routes_wrapper">
         <a-menu style="width: 100%" mode="inline">
           <!-- Start:: Logout Tab -->

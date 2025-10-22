@@ -21,7 +21,20 @@
     "appSettings": "إعدادات التطبيق"
   },
 
+  "LABELS": {
+    "productsAndServices": "المنتجات والخدمات",
+    "productOrServiceName": "اسم المنتج أو الخدمة",
+    "quantity": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "totalPrice": "السعر الكلي",
+    "actions": "الإجراءات",
+    "expectedDurationDays": "مدة التنفيذ المتوقعة (بالأيام)",
+    "totalOfferPriceSAR": "السعر الكلي للعرض (بالريال)",
+    "attachments": "الملفات"
+  },
+
   "SIDENAV": {
+    "sendOffer": "إرسال عرض سعر",
     "dashboard": "الرئيسية",
     "control_admins": "إدارة لوحة التحكم",
     "placese": "إدارة الاماكن",
@@ -40,6 +53,11 @@
       "host_financial_reports": "التقارير المالية الخاصة بالمضيفين",
       "cleaning_financial_report": "التقارير المالية الخاصة بشركات التنظيف",
       "financial_reports": "التقارير المالية"
+    },
+    "LiveChat": {
+      "title": "الشات",
+      "showAll": "كل المحادثات",
+      "add": "بدء محادثة جديد"
     },
     "Customers": {
       "title": "إدارة عملائنا"
@@ -102,7 +120,8 @@
     "ContactMessages": {
       "title": "رسائل التواصل",
       "showAll": "كل رسائل التواصل",
-      "show": "عرض بيانات الرسالة"
+      "show": "عرض بيانات الرسالة",
+      "liveChat": "الشات"
     },
     "AppContent": {
       "newTitle": "الشروط والخصوصية",
@@ -919,6 +938,8 @@
   },
 
   "STATUS": {
+    "read": "مقروءة",
+    "unread": "غير مقروءة",
     "blocked": "بلوك",
     "no_response": "لا يوجد رد",
     "used": "مستعمل",
@@ -1143,6 +1164,8 @@
   },
 
   "BUTTONS": {
+    "chat": "شات",
+    "send_offer": "إرسال عرض سعر",
     "back": "رجوع",
     "view": "عرض",
     "download": "تحميل",
@@ -1271,6 +1294,13 @@
   },
 
   "PLACEHOLDERS": {
+    "view_order_details": "عرض تفاصيل الطلب",
+    "type_message": "أدخل الرسالة",
+    "productOrServiceName": "أدخل اسم المنتج أو الخدمة",
+    "quantity": "أدخل الكمية",
+    "unitPrice": "أدخل سعر الوحدة",
+    "expectedDuration": "أدخل مدة التنفيذ بالأيام",
+    "totalOfferPrice": "أدخل السعر الكلي للعرض",
     "orderDetails": "تفاصيل الطلب",
     "serialNumber": "رقم الطلب",
     "executionDate": "تاريخ التنفيذ",
@@ -1480,7 +1510,7 @@
     "totalOrdars": "إجمالي الطلبات",
     "packageTime": "مدة الباقة ",
     "packageClient": "عدد المشتركين في الباقة ",
-    "totalPrice": "إجمالي سعر الباقة (شامل الضريبة)",
+    "totalPrice": "إجمالي سعر الباقة",
     "totalPriceNoTax": "سعر الباقة بدون ضريبة ",
     "tax": "نسبة ضريبة القيمة المضافة للدفع (%)",
     "reference_price": "السعر المرجعي",
@@ -2515,6 +2545,10 @@
   },
 
   "MESSAGES": {
+    "offerSentSuccessfully": "تم إرسال عرض السعر بنجاح",
+    "mustAddProductsOrAttachments": "يجب إضافة منتجات في الجدول أو رفع مرفقات (أحدهما على الأقل)",
+    "acceptedFormats": "الصيغ المقبولة",
+    "imagesPdfExcel": "صور، PDF، Excel",
     "errorFetchingData": "حدث خطأ أثناء جلب البيانات",
     "paymentSuccess": "تمت عملية الدفع بنجاح",
     "paymentFailed": "فشلت عملية الدفع",
