@@ -65,6 +65,12 @@ import ShowLiveChat from "../views/Cruds/LiveChat/Show.vue";
 import ChatLiveChat from "../views/Cruds/LiveChat/Chat.vue";
 // ============== End:: LiveChat Routes
 
+// ============== Start:: ReferralProviderCodes Routes
+import ReferralProviderCodesHome from "../views/Cruds/ReferralCodes/Home.vue";
+import AllReferralProviderCodes from "../views/Cruds/ReferralCodes/ShowAll.vue";
+import ShowReferralProviderCodes from "../views/Cruds/ReferralCodes/Show.vue";
+// ============== End:: ReferralProviderCodes Routes
+
 // ============== Start:: StoreRates Routes
 import StoreRatesHome from "../views/Cruds/StoreRates/Home.vue";
 import AllStoreRates from "../views/Cruds/StoreRates/ShowAll.vue";
@@ -751,8 +757,6 @@ const routes = [
       },
       // End:: Packages Financial Reports Routes Config
 
-      
-
       // Start:: Roles Routes Config
       {
         path: "/roles",
@@ -1167,6 +1171,45 @@ const routes = [
         ],
       },
       // End:: LiveChat Routes Config
+
+      // Start:: referralprovidercodes  Config
+      {
+        path: "/referralcodes",
+        name: "referralprovidercodes",
+        component: ReferralProviderCodesHome,
+        meta: {
+          middleware: [auth],
+        },
+        children: [
+          {
+            path: "all",
+            name: "Allreferralprovidercodes",
+            component: AllReferralProviderCodes,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: "referralprovidercodes index",
+                subject: "referralprovidercodes",
+              },
+            },
+          },
+          {
+            path: "show/:id",
+            name: "ShowReferralProviderCodes",
+            component: ShowReferralProviderCodes,
+            props: true,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: "referralprovidercodes show",
+                subject: "referralprovidercodes",
+              },
+            },
+          },
+        ],
+      },
+      // End:: referralprovidercodes Config
+
       // Start:: hobbies  Config
       {
         path: "/hobbies",
@@ -1292,8 +1335,7 @@ const routes = [
       },
       // End:: CustomerOpinions Config
 
-
-// Start:: recommendations Config
+      // Start:: recommendations Config
       {
         path: "/recommendations",
         name: "recommendations",
@@ -1597,65 +1639,65 @@ const routes = [
 
       // Start:: services  Config
       {
-      path: "/services",
-      name: "services",
-      component: ServicesHome,
-      meta: {
-        middleware: [auth],
+        path: "/services",
+        name: "services",
+        component: ServicesHome,
+        meta: {
+          middleware: [auth],
+        },
+        children: [
+          {
+            path: "all",
+            name: "Allservices",
+            component: AllServices,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: "services index",
+                subject: "services",
+              },
+            },
+          },
+          {
+            path: "create",
+            name: "Createservices",
+            component: CreateServices,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: "services create",
+                subject: "services",
+              },
+            },
+          },
+          {
+            path: "edit/:id",
+            name: "Editservices",
+            component: EditServices,
+            props: true,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: "services edit",
+                subject: "services",
+              },
+            },
+          },
+          {
+            path: "show/:id",
+            name: "Showservices",
+            component: ShowServices,
+            props: true,
+            meta: {
+              middleware: [auth],
+              requiresPermission: {
+                action: "services show",
+                subject: "services",
+              },
+            },
+          },
+        ],
       },
-      children: [
-        {
-          path: "all",
-          name: "Allservices",
-          component: AllServices,
-          meta: {
-            middleware: [auth],
-            requiresPermission: {
-              action: "services index",
-              subject: "services",
-            },
-          },
-        },
-        {
-          path: "create",
-          name: "Createservices",
-          component: CreateServices,
-          meta: {
-            middleware: [auth],
-            requiresPermission: {
-              action: "services create",
-              subject: "services",
-            },
-          },
-        },
-        {
-          path: "edit/:id",
-          name: "Editservices",
-          component: EditServices,
-          props: true,
-          meta: {
-            middleware: [auth],
-            requiresPermission: {
-              action: "services edit",
-              subject: "services",
-            },
-          },
-        },
-        {
-          path: "show/:id",
-          name: "Showservices",
-          component: ShowServices,
-          props: true,
-          meta: {
-            middleware: [auth],
-            requiresPermission: {
-              action: "services show",
-              subject: "services",
-            },
-          },
-        },
-      ],
-    },
       // End:: services Config
 
       // Start:: Sectors Config
@@ -1782,7 +1824,7 @@ const routes = [
           },
         ],
       },
-        // End:: customers Config
+      // End:: customers Config
 
       // Start:: reasons  Config
       // {
@@ -1993,7 +2035,8 @@ const routes = [
                 action: "acceptedproviders index",
                 subject: "acceptedproviders",
               },
-            }},
+            },
+          },
           {
             path: "show/:id",
             name: "ShowUserRequests",
