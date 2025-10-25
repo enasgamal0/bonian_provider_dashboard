@@ -2,7 +2,7 @@
   <div class="crud_form_wrapper">
     <!-- Start:: Title -->
     <div class="form_title_wrapper">
-      <h4>{{ $t("SIDENAV.referral-providers-codes.show") }}</h4>
+      <h4>{{ $t("PLACEHOLDERS.referralcodes") }}</h4>
     </div>
     <div class="col-12 text-end">
       <v-btn @click="$router.go(-1)" style="color: #1b706f">

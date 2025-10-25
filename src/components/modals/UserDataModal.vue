@@ -51,6 +51,15 @@
               />
               <!-- End:: tel Input -->
 
+              <!-- Start:: points number Input -->
+              <base-input
+                type="number"
+                :placeholder="$t('PLACEHOLDERS.points_number')"
+                v-model.trim="data.points"
+                disabled
+              />
+              <!-- End:: points number Input -->
+
               <!-- Start:: Activate Edit Password Switch Input -->
               <div class="input_wrapper switch_wrapper my-5">
                 <v-switch
@@ -145,6 +154,7 @@ export default {
         name: null,
         email: null,
         phone: null,
+        points: null,
         enableEditPassword: false,
         password: null,
         passwordConfirmation: null,
@@ -211,6 +221,7 @@ export default {
         this.data.name = res.data.data.user.name;
         this.data.email = res.data.data.user.email;
         this.data.phone = res.data.data.user.mobile;
+        this.data.points = res.data.data.user.points;
         // End:: Set Data
       } catch (error) {
         console.log(error.response.data.message);

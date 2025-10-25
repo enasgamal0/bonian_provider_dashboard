@@ -1197,14 +1197,14 @@
         <router-link to="/referralcodes/all">
           <span class="route_icon">
             <img
-              src="@/assets/media/icons/ui_icons/messages.svg"
+              src="@/assets/media/icons/ui_icons/hs_code.svg"
               alt="icon"
               width="40"
               height="40"
             />
           </span>
           <span class="route_text">
-            {{ $t("SIDENAV.ReferralCodes.title") }}
+            {{ $t("PLACEHOLDERS.referralcodes") }}
           </span>
         </router-link>
       </div>

@@ -10,7 +10,6 @@
       </v-btn>
     </div>
     <!-- End:: Title -->
-
     <!-- Start:: Order Details Content -->
     <div class="single_step_form_content_wrapper">
       <form @submit.prevent="validateFormInputs">
@@ -24,7 +23,6 @@
               disabled
             />
           </div>
-
           <div class="col-md-6">
             <base-input
               col="12"
@@ -34,7 +32,6 @@
               disabled
             />
           </div>
-
           <div class="col-md-6">
             <base-input
               col="12"
@@ -44,7 +41,6 @@
               disabled
             />
           </div>
-
           <div class="col-md-6" v-if="data.district">
             <base-input
               col="12"
@@ -54,7 +50,6 @@
               disabled
             />
           </div>
-
           <div class="col-md-6">
             <base-input
               col="12"
@@ -64,7 +59,6 @@
               disabled
             />
           </div>
-
           <div class="col-12" v-if="data.questions && data.questions.length">
             <h5 class="section-title">
               {{ $t("PLACEHOLDERS.questionsAndAnswers") }}
@@ -90,7 +84,6 @@
               </div>
             </div>
           </div>
-
           <div class="col-12" v-if="data.note">
             <base-input
               col="12"
@@ -100,7 +93,6 @@
               disabled
             />
           </div>
-
           <div
             class="col-12 mt-4"
             v-if="data.attachments && data.attachments.length"
@@ -127,27 +119,48 @@
               </div>
             </div>
           </div>
-
+          
+          <!-- Conditional Button Based on chat_before -->
           <div class="col-12 mt-4 text-center">
             <v-btn
+              v-if="!data.chat_before"
               @click="showPaymentDialog = true"
               color="#1b706f"
               size="large"
-              class="view-user-btn"
+              elevation="2"
+              class="px-8 py-6 rounded-lg"
+              style="font-weight: 600; letter-spacing: 0.5px; color: white;"
             >
               <i class="fas fa-user-circle me-2"></i>
               {{ $t("PLACEHOLDERS.viewUserDetails") }}
             </v-btn>
-          </div>
-          <div class="col-12 mt-4 text-center">
-            <a :href="'/orders/create/' + id">
+            
             <v-btn
+              v-else
+              @click="continueChatWithUser"
               color="#1b706f"
               size="large"
-              class="view-user-btn"
+              elevation="2"
+              class="px-8 py-6 rounded-lg"
+              style="font-weight: 600; letter-spacing: 0.5px; color: white;"
             >
-              {{ $t("BUTTONS.send_offer") }}
+              <i class="fas fa-comments me-2"></i>
+              {{ $t("PLACEHOLDERS.continueChat") }}
             </v-btn>
+          </div>
+
+          <div class="col-12 mt-3 text-center">
+            <a :href="'/orders/create/' + id">
+              <v-btn
+                color="#1b706f"
+                size="large"
+                elevation="2"
+                variant="outlined"
+                class="px-8 py-6 rounded-lg"
+                style="font-weight: 600; letter-spacing: 0.5px; color: white;"
+              >
+                {{ $t("BUTTONS.send_offer") }}
+              </v-btn>
             </a>
           </div>
         </div>
@@ -156,75 +169,93 @@
     <!-- End:: Order Details Content -->
 
     <!-- Start:: Payment Dialog -->
-    <v-dialog v-model="showPaymentDialog" max-width="500">
-      <v-card>
-        <v-card-title
-          class="text-h5 text-center py-4"
-          style="background-color: #1b706f; color: white"
-        >
-          {{ $t("PLACEHOLDERS.paymentRequired") }}
-        </v-card-title>
-
-        <v-card-text class="py-5 px-4">
+    <v-dialog v-model="showPaymentDialog" max-width="550" persistent>
+      <v-card class="rounded-xl" elevation="8">
+        <v-card-text class="py-6 px-5">
           <div class="text-center mb-4">
-            <i
-              class="fas fa-info-circle"
-              style="font-size: 48px; color: #1b706f"
-            ></i>
+            <div
+              class="payment-icon-wrapper mx-auto"
+              style="width: 80px; height: 80px; background: linear-gradient(135deg, #e8f5f5 0%, #d4eceb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(27, 112, 111, 0.15);"
+            >
+              <i
+                class="fas fa-wallet"
+                style="font-size: 36px; color: #1b706f;"
+              ></i>
+            </div>
           </div>
-          <p class="text-center payment-message">
-            {{ $t("PLACEHOLDERS.paymentMessage", { amount: paymentAmount }) }}
+
+          <p
+            class="text-center payment-message mb-4"
+            style="font-size: 16px; line-height: 1.6; color: #333;"
+          >
+            {{ $t("PLACEHOLDERS.paymentMessage", { amount: paymentAmount, amountPoints: paymentAmountPoints }) }}
+          </p>
+          <p>
+            *{{ $t("PLACEHOLDERS.your_current_pointes_number", { points: myPoints }) }}
           </p>
 
-          <div class="payment-options mt-4">
-            <v-btn
+          <div class="payment-options mt-5">
+            <!-- <v-btn
               block
-              size="large"
-              color="#1b706f"
-              class="mb-2"
+              size="x-large"
+              elevation="2"
+              class="mb-3 rounded-lg"
+              style="background: linear-gradient(135deg, #1b706f 0%, #15605f 100%); color: white; font-weight: 600; letter-spacing: 0.5px; text-transform: none; font-size: 15px;"
               @click="viewProfile"
             >
-              <i class="fas fa-user me-2"></i>
+              <i class="fas fa-user-check me-2"></i>
               {{ $t("PLACEHOLDERS.viewProfile") }}
+            </v-btn> -->
+
+            <v-btn
+              block
+              size="x-large"
+              elevation="2"
+              class="mb-3 rounded-lg"
+              style="background: linear-gradient(135deg, #1b706f 0%, #15605f 100%); color: white; font-weight: 600; letter-spacing: 0.5px; text-transform: none; font-size: 15px;"
+              @click="openChat"
+            >
+              <!-- <i class="fas fa-comments me-2"></i> -->
+              {{ $t("PLACEHOLDERS.pay") }}
             </v-btn>
 
             <v-btn
               block
-              size="large"
-              color="#1b706f"
-              variant="outlined"
+              size="x-large"
+              elevation="2"
+              class="mb-3 rounded-lg"
+              style="background: linear-gradient(135deg, #1b706f 0%, #15605f 100%); color: white; font-weight: 600; letter-spacing: 0.5px; text-transform: none; font-size: 15px;"
               @click="openChat"
+              :disabled="myPoints < paymentAmountPoints"
             >
-              <i class="fas fa-comments me-2"></i>
-              {{ $t("PLACEHOLDERS.openChat") }}
+              <!-- <i class="fas fa-comments me-2"></i> -->
+              {{ $t("PLACEHOLDERS.points_pay") }}
             </v-btn>
           </div>
         </v-card-text>
-
-        <v-card-actions class="px-4 pb-4">
-          <v-btn
-            block
-            size="large"
-            @click="showPaymentDialog = false"
-            variant="text"
-          >
-            {{ $t("PLACEHOLDERS.cancel") }}
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
     <!-- End:: Payment Dialog -->
 
     <!-- Start:: Image Preview Dialog -->
-    <v-dialog v-model="imagePreviewDialog" max-width="800">
-      <v-card>
-        <v-card-actions class="justify-end pa-2">
-          <!-- <v-btn icon @click="imagePreviewDialog = false" variant="text">
-            <i class="fas fa-times"></i>
-          </v-btn> -->
+    <v-dialog v-model="imagePreviewDialog" max-width="900">
+      <v-card class="rounded-xl" elevation="8">
+        <v-card-actions class="justify-end pa-3" style="background-color: #f5f5f5;">
+          <v-btn
+            icon
+            @click="imagePreviewDialog = false"
+            variant="text"
+            size="large"
+            style="color: #1b706f;"
+          >
+            <i class="fas fa-times" style="font-size: 20px;"></i>
+          </v-btn>
         </v-card-actions>
         <v-card-text class="pa-0">
-          <img :src="previewImageUrl" style="width: 100%; height: auto" />
+          <img
+            :src="previewImageUrl"
+            style="width: 100%; height: auto; display: block;"
+          />
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -235,23 +266,19 @@
 <script>
 export default {
   name: "ShowOrderDetails",
-
   data() {
     return {
       // Start:: Loader Control Data
       isWaitingRequest: false,
       // End:: Loader Control Data
-
       // Start:: Dialog Control
       showPaymentDialog: false,
       imagePreviewDialog: false,
       previewImageUrl: null,
       // End:: Dialog Control
-
       // Start:: Payment Data
       paymentAmount: 0,
       // End:: Payment Data
-
       // Start:: Order Data
       data: {
         serial_number: null,
@@ -263,12 +290,14 @@ export default {
         questions: [],
         attachments: [],
         user: null,
+        chat_before: false,
       },
       // End:: Order Data
       id: this.$route.params?.id,
+      myPoints: 0,
+      paymentAmountPoints: 0,
     };
   },
-
   methods: {
     // Start:: Fetch Order Details
     async fetchOrderDetails() {
@@ -278,9 +307,7 @@ export default {
           method: "GET",
           url: `orders/show/${this.$route.params.id}`,
         });
-
         const orderData = res.data.data.order;
-
         this.data.serial_number = orderData.serial_number;
         this.data.date = orderData.date;
         this.data.note = orderData.note;
@@ -290,6 +317,7 @@ export default {
         this.data.questions = orderData.questions || [];
         this.data.attachments = orderData.attachments || [];
         this.data.user = orderData.user;
+        this.data.chat_before = orderData.chat_before || false;
       } catch (error) {
         console.error("Error fetching order details:", error);
         this.$toast.error(
@@ -306,15 +334,35 @@ export default {
       try {
         const res = await this.$axios({
           method: "GET",
-          url: "settings/payment-amount",
+          url: "settings",
+          params: { key: "dashboard_setting" },
         });
-        this.paymentAmount = res.data.data.amount;
+        this.paymentAmount =
+          res.data.data.data[0]?.value?.Payment_amount || 0;
+        this.paymentAmountPoints =
+          res.data.data.data[0]?.value?.Payment_amount || 0 * res.data.data.data[0]?.value?.Points_value_per_riyal || 0;
       } catch (error) {
         console.error("Error fetching payment amount:", error);
         this.paymentAmount = 0;
+        this.paymentAmountPoints = 0;
       }
     },
     // End:: Fetch Payment Amount
+
+    // Start:: Fetch My Points
+    async fetchMyPoints() {
+      try {
+        const res = await this.$axios({
+          method: "GET",
+          url: "auth/profile",
+        });
+        this.myPoints = res.data.data?.user?.points;
+      } catch (error) {
+        console.error("Error fetching my points:", error);
+        this.myPoints = 0;
+      }
+    },
+    // End:: Fetch My Points
 
     // Start:: View Profile (Navigate to Payment)
     viewProfile() {
@@ -340,6 +388,18 @@ export default {
     },
     // End:: Open Chat
 
+    // Start:: Continue Chat with User
+    continueChatWithUser() {
+      this.$router.push({
+        name: "ChatShow",
+        params: {
+          orderId: this.$route.params.id,
+          userId: this.data.user?.id,
+        },
+      });
+    },
+    // End:: Continue Chat with User
+
     // Start:: Open Image Preview
     openImagePreview(imageUrl) {
       this.previewImageUrl = imageUrl;
@@ -347,12 +407,50 @@ export default {
     },
     // End:: Open Image Preview
   },
-
   created() {
     // Start:: Fire Methods
     this.fetchOrderDetails();
     this.fetchPaymentAmount();
+    this.fetchMyPoints();
     // End:: Fire Methods
   },
 };
 </script>
+
+<style scoped>
+.question-item {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border-left: 4px solid #1b706f;
+}
+
+.answer-text {
+  margin: 0;
+  color: #555;
+  line-height: 1.6;
+}
+
+.attachments-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.attachment-item img {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.attachment-item img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.section-title {
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+</style>
