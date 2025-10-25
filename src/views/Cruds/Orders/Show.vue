@@ -119,9 +119,9 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Conditional Button Based on chat_before -->
-          <div class="col-12 mt-4 text-center">
+          <!-- <div class="col-12 mt-4 text-center">
             <v-btn
               v-if="!data.chat_before"
               @click="showPaymentDialog = true"
@@ -147,7 +147,7 @@
               <i class="fas fa-comments me-2"></i>
               {{ $t("PLACEHOLDERS.continueChat") }}
             </v-btn>
-          </div>
+          </div> -->
 
           <div class="col-12 mt-3 text-center">
             <a :href="'/orders/create/' + id">
@@ -157,7 +157,7 @@
                 elevation="2"
                 variant="outlined"
                 class="px-8 py-6 rounded-lg"
-                style="font-weight: 600; letter-spacing: 0.5px; color: white;"
+                style="font-weight: 600; letter-spacing: 0.5px; color: white"
               >
                 {{ $t("BUTTONS.send_offer") }}
               </v-btn>
@@ -175,23 +175,41 @@
           <div class="text-center mb-4">
             <div
               class="payment-icon-wrapper mx-auto"
-              style="width: 80px; height: 80px; background: linear-gradient(135deg, #e8f5f5 0%, #d4eceb 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(27, 112, 111, 0.15);"
+              style="
+                width: 80px;
+                height: 80px;
+                background: linear-gradient(135deg, #e8f5f5 0%, #d4eceb 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 12px rgba(27, 112, 111, 0.15);
+              "
             >
               <i
                 class="fas fa-wallet"
-                style="font-size: 36px; color: #1b706f;"
+                style="font-size: 36px; color: #1b706f"
               ></i>
             </div>
           </div>
 
           <p
             class="text-center payment-message mb-4"
-            style="font-size: 16px; line-height: 1.6; color: #333;"
+            style="font-size: 16px; line-height: 1.6; color: #333"
           >
-            {{ $t("PLACEHOLDERS.paymentMessage", { amount: paymentAmount, amountPoints: paymentAmountPoints }) }}
+            {{
+              $t("PLACEHOLDERS.paymentMessage", {
+                amount: paymentAmount,
+                amountPoints: paymentAmountPoints,
+              })
+            }}
           </p>
           <p>
-            *{{ $t("PLACEHOLDERS.your_current_pointes_number", { points: myPoints }) }}
+            *{{
+              $t("PLACEHOLDERS.your_current_pointes_number", {
+                points: myPoints,
+              })
+            }}
           </p>
 
           <div class="payment-options mt-5">
@@ -212,7 +230,14 @@
               size="x-large"
               elevation="2"
               class="mb-3 rounded-lg"
-              style="background: linear-gradient(135deg, #1b706f 0%, #15605f 100%); color: white; font-weight: 600; letter-spacing: 0.5px; text-transform: none; font-size: 15px;"
+              style="
+                background: linear-gradient(135deg, #1b706f 0%, #15605f 100%);
+                color: white;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                text-transform: none;
+                font-size: 15px;
+              "
               @click="openChat"
             >
               <!-- <i class="fas fa-comments me-2"></i> -->
@@ -224,7 +249,14 @@
               size="x-large"
               elevation="2"
               class="mb-3 rounded-lg"
-              style="background: linear-gradient(135deg, #1b706f 0%, #15605f 100%); color: white; font-weight: 600; letter-spacing: 0.5px; text-transform: none; font-size: 15px;"
+              style="
+                background: linear-gradient(135deg, #1b706f 0%, #15605f 100%);
+                color: white;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                text-transform: none;
+                font-size: 15px;
+              "
               @click="openChat"
               :disabled="myPoints < paymentAmountPoints"
             >
@@ -240,26 +272,53 @@
     <!-- Start:: Image Preview Dialog -->
     <v-dialog v-model="imagePreviewDialog" max-width="900">
       <v-card class="rounded-xl" elevation="8">
-        <v-card-actions class="justify-end pa-3" style="background-color: #f5f5f5;">
+        <v-card-actions
+          class="justify-end pa-3"
+          style="background-color: #f5f5f5"
+        >
           <v-btn
             icon
             @click="imagePreviewDialog = false"
             variant="text"
             size="large"
-            style="color: #1b706f;"
+            style="color: #1b706f"
           >
-            <i class="fas fa-times" style="font-size: 20px;"></i>
+            <i class="fas fa-times" style="font-size: 20px"></i>
           </v-btn>
         </v-card-actions>
         <v-card-text class="pa-0">
           <img
             :src="previewImageUrl"
-            style="width: 100%; height: auto; display: block;"
+            style="width: 100%; height: auto; display: block"
           />
         </v-card-text>
       </v-card>
     </v-dialog>
     <!-- End:: Image Preview Dialog -->
+
+    <!-- Floating Chat Button -->
+<v-btn
+  v-if="data.user"
+  icon
+  elevation="8"
+  :class="['floating-chat-btn', lang === 'ar' ? 'left' : 'right']"
+  @click="toggleChatDialog"
+>
+  <div class="rings-wrapper">
+    <span class="ring ring1"></span>
+    <!-- <span class="ring ring2"></span> -->
+    <!-- <span class="ring ring3"></span> -->
+    <i class="fas fa-comments icon"></i>
+  </div>
+</v-btn>
+
+<!-- Add overlay to close dialog on click outside -->
+<div
+  v-if="imagePreviewDialog || showPaymentDialog"
+  class="overlay"
+  @click="closeDialogs"
+></div>
+
   </div>
 </template>
 
@@ -268,6 +327,7 @@ export default {
   name: "ShowOrderDetails",
   data() {
     return {
+      lang: this.$i18n.locale,
       // Start:: Loader Control Data
       isWaitingRequest: false,
       // End:: Loader Control Data
@@ -299,6 +359,21 @@ export default {
     };
   },
   methods: {
+    toggleChatDialog() {
+    this.showPaymentDialog = !this.showPaymentDialog;
+  },
+  closeDialogs() {
+    this.showPaymentDialog = false;
+    this.imagePreviewDialog = false;
+  },
+    handleChatButton() {
+      if (this.data.chat_before) {
+        this.continueChatWithUser();
+      } else {
+        this.showPaymentDialog = true;
+      }
+    },
+
     // Start:: Fetch Order Details
     async fetchOrderDetails() {
       this.isWaitingRequest = true;
@@ -337,10 +412,11 @@ export default {
           url: "settings",
           params: { key: "dashboard_setting" },
         });
-        this.paymentAmount =
-          res.data.data.data[0]?.value?.Payment_amount || 0;
+        this.paymentAmount = res.data.data.data[0]?.value?.Payment_amount || 0;
         this.paymentAmountPoints =
-          res.data.data.data[0]?.value?.Payment_amount || 0 * res.data.data.data[0]?.value?.Points_value_per_riyal || 0;
+          res.data.data.data[0]?.value?.Payment_amount ||
+          0 * res.data.data.data[0]?.value?.Points_value_per_riyal ||
+          0;
       } catch (error) {
         console.error("Error fetching payment amount:", error);
         this.paymentAmount = 0;
@@ -418,6 +494,80 @@ export default {
 </script>
 
 <style scoped>
+.floating-chat-btn {
+  position: fixed;
+  bottom: 90px;
+  z-index: 9999;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1b706f 0%, #15605f 100%);
+  box-shadow: 0 4px 12px rgba(27, 112, 111, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.floating-chat-btn.left {
+  left: 60px;
+}
+
+.floating-chat-btn.right {
+  right: 60px;
+}
+
+.floating-chat-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(27, 112, 111, 0.4);
+}
+
+/* Rings */
+.rings-wrapper {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring {
+  position: absolute;
+  border: 2px solid rgba(27, 112, 111, 0.5);
+  border-top-color: #1b706f; /* <-- highlight one side */
+  border-radius: 50%;
+  animation: spin 3s linear infinite;
+}
+
+.ring1 { width: 90px; height: 90px; animation-duration: 3s; }
+.ring2 { width: 110px; height: 110px; animation-duration: 4s; }
+.ring3 { width: 130px; height: 130px; animation-duration: 5s; }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.rings-wrapper .icon {
+  position: relative;
+  font-size: 22px;
+  color: white;
+  z-index: 2;
+}
+
+/* Overlay to detect outside clicks */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  background: transparent;
+}
+
+
 .question-item {
   background-color: #f8f9fa;
   border-radius: 8px;
