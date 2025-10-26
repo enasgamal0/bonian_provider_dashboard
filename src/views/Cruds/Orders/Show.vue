@@ -169,7 +169,7 @@
     <!-- End:: Order Details Content -->
 
     <!-- Start:: Payment Dialog -->
-    <v-dialog v-model="showPaymentDialog" max-width="550" persistent>
+    <v-dialog v-model="showPaymentDialog" max-width="550" style="z-index: 9999">
       <v-card class="rounded-xl" elevation="8">
         <v-card-text class="py-6 px-5">
           <div class="text-center mb-4">
@@ -195,7 +195,7 @@
 
           <p
             class="text-center payment-message mb-4"
-            style="font-size: 16px; line-height: 1.6; color: #333"
+            style="font-size: 16px; line-height: 1.6;"
           >
             {{
               $t("PLACEHOLDERS.paymentMessage", {
@@ -602,5 +602,10 @@ export default {
   font-weight: 600;
   margin-bottom: 20px;
   color: #333;
+}
+
+.theme--light.v-btn.v-btn--disabled.v-btn--has-bg{
+  color: black !important;
+  cursor: not-allowed !important;
 }
 </style>

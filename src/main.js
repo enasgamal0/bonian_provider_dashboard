@@ -48,18 +48,16 @@ window.Pusher = Pusher;
 window.Echo = new Echo({
   broadcaster: "pusher",
   key: "9077e2ce86701f17f3b2",
-  cluster: "eu",
+  cluster: "mt1",
   forceTLS: true,
   disableStats: true,
   enabledTransports: ["ws", "wss"],
-  // authEndpoint: "https://backend.Tanfeez.com/broadcasting/auth", // Update with the correct auth endpoint
-  // auth: {
-  //   headers: {
-  //     Authorization: `Bearer ${localStorage.getItem(
-  //       "Tanfeez_provider_dashboard_user_token"
-  //     )}`, // Use getItem() to retrieve the value
-  //   },
-  // },
+  authEndpoint: "https://backend.Bonian.com/broadcasting/auth",
+  auth: {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("bonian_provider_dashboard_user_token")}`,
+    },
+  },
 });
 
 // casl vue permissions

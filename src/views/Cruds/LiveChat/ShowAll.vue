@@ -2,8 +2,14 @@
   <div class="show_all_content_wrapper">
     <main>
       <!-- =========== Start:: Filter Form =========== -->
-      <div class="filter_content_wrapper" :class="{ active: filterFormIsActive }">
-        <button class="filter_toggler" @click="filterFormIsActive = !filterFormIsActive">
+      <div
+        class="filter_content_wrapper"
+        :class="{ active: filterFormIsActive }"
+      >
+        <button
+          class="filter_toggler"
+          @click="filterFormIsActive = !filterFormIsActive"
+        >
           <i class="fal fa-times"></i>
         </button>
 
@@ -16,7 +22,7 @@
             <div class="row justify-content-center align-items-center w-100">
               <!-- Start:: Client Name -->
               <base-input
-                col="3"
+                col="4"
                 type="text"
                 :placeholder="$t('TABLES.ContactMessages.clientName')"
                 v-model.trim="filterOptions.name"
@@ -25,7 +31,7 @@
 
               <!-- Start:: Order ID -->
               <base-input
-                col="3"
+                col="4"
                 type="number"
                 :placeholder="$t('PLACEHOLDERS.orderNumber')"
                 v-model.trim="filterOptions.order_id"
@@ -34,7 +40,7 @@
 
               <!-- Start:: Message Read Status -->
               <base-select-input
-                col="3"
+                col="4"
                 :optionsList="messageStatuses"
                 :placeholder="$t('PLACEHOLDERS.status')"
                 v-model="filterOptions.is_read"
@@ -111,23 +117,38 @@
 
         <!-- Start:: Order ID -->
         <template v-slot:[`item.order_id`]="{ item }">
-          <span v-if="item.order_id">#{{ item.order_id }}</span>
+          <span v-if="item.order_id">{{ item.order_id }}</span>
           <span v-else>-</span>
         </template>
         <!-- End:: Order ID -->
 
         <!-- Start:: Last Message -->
         <template v-slot:[`item.last_message.message_text`]="{ item }">
-          <span v-if="item.last_message">
-            {{ item.last_message.message_text || '--' }}
-          </span>
-          <span v-else>--</span>
+          <div class="actions" v-if="item.last_message?.message_text && item.last_message?.message_text != ' '">
+            <button
+              class="btn_show"
+              @click="showReplayModal(item.last_message?.message_text)"
+            >
+              <i class="fal fa-file-alt"></i>
+            </button>
+          </div>
+          <div class="actions" v-if="!item.last_message?.message_text || (item.last_message?.message_text == ' ' && item.last_message?.resources?.length > 0)">
+            <button
+              class="btn_show"
+              @click="showReplayModal($t('PLACEHOLDERS.file'))"
+            >
+              <i class="fal fa-file-alt"></i>
+            </button>
+          </div>
+          <div v-if="!item.last_message?.message_text || (item.last_message?.message_text == ' ' && item.last_message?.resources?.length == 0)">
+            -
+          </div>
         </template>
         <!-- End:: Last Message -->
 
         <!-- Start:: Last Message Date -->
         <template v-slot:[`item.last_message.created_at`]="{ item }">
-          <span v-if="item.last_message">
+          <span v-if="item.last_message?.created_at">
             {{ formatDate(item.last_message.created_at) }}
           </span>
           <span v-else>--</span>
@@ -158,12 +179,65 @@
                 <span>{{ $t("BUTTONS.chat") }}</span>
               </template>
               <button class="btn_chat" @click="showChat(item)">
-                <i class="fad fa-comments fs-5" style="color: cornflowerblue"></i>
+                <i
+                  class="fad fa-comments fs-5"
+                  style="color: cornflowerblue"
+                ></i>
               </button>
             </a-tooltip>
           </div>
         </template>
         <!-- End:: Actions -->
+        <!-- ======================== Start:: Dialogs ======================== -->
+        <template v-slot:top>
+          <!-- Start:: Replay Modal -->
+          <description-modal
+            v-if="dialogReplay"
+            :modalIsOpen="dialogReplay"
+            :modalDesc="selectedReplayTextToShow"
+            @toggleModal="dialogReplay = !dialogReplay"
+          />
+          <!-- End:: Replay Modal -->
+
+          <!-- Start:: Replay Modal -->
+          <v-dialog v-model="dialogSendReplay">
+            <v-card>
+              <v-card-title class="text-h5 justify-center">
+                {{ $t("TITLES.sendReplay") }}
+              </v-card-title>
+
+              <form class="w-100">
+                <base-input
+                  col="12"
+                  rows="3"
+                  type="textarea"
+                  :placeholder="$t('PLACEHOLDERS.messageReplay')"
+                  v-model.trim="messageReplay"
+                  required
+                />
+              </form>
+
+              <v-card-actions>
+                <v-btn
+                  class="modal_confirm_btn"
+                  @click="sendReplay"
+                  :disabled="!!!messageReplay || messageReplay?.length < 3"
+                >
+                  {{ $t("BUTTONS.replay") }}
+                </v-btn>
+
+                <v-btn
+                  class="modal_cancel_btn"
+                  @click="dialogSendReplay = false"
+                  >{{ $t("BUTTONS.cancel") }}</v-btn
+                >
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <!-- End:: Replay Modal -->
+        </template>
+        <!-- ======================== End:: Dialogs ======================== -->
       </v-data-table>
       <!-- =========== End:: Data Table =========== -->
     </main>
@@ -196,8 +270,8 @@ export default {
 
     messageStatuses() {
       return [
-        { id: 1, name: this.$t("STATUS.read"), value: "read" },
-        { id: 2, name: this.$t("STATUS.unread"), value: "unread" },
+        { id: 1, name: this.$t("STATUS.read"), value: 1 },
+        { id: 2, name: this.$t("STATUS.unread"), value: 0 },
       ];
     },
   },
@@ -207,7 +281,8 @@ export default {
       loading: false,
       isWaitingRequest: false,
       filterFormIsActive: false,
-
+      dialogReplay: false,
+      selectedReplayTextToShow: "",
       filterOptions: {
         name: null,
         order_id: null,
@@ -215,12 +290,36 @@ export default {
       },
 
       tableHeaders: [
-        { text: this.$t("TABLES.ContactMessages.clientName"), value: "user.name", align: "center" },
-        { text: this.$t("TABLES.ContactMessages.orderNumber"), value: "order_id", align: "center" },
-        { text: this.$t("TABLES.ContactMessages.message"), value: "last_message.message_text", align: "center" },
-        { text: this.$t("TABLES.ContactMessages.date"), value: "last_message.created_at", align: "center" },
-        { text: this.$t("TABLES.ContactMessages.status"), value: "unread_messages_count", align: "center" },
-        { text: this.$t("TABLES.ContactMessages.actions"), value: "actions", align: "center" },
+        {
+          text: this.$t("PLACEHOLDERS.userData"),
+          value: "user.name",
+          align: "center",
+        },
+        {
+          text: this.$t("PLACEHOLDERS.orderNumber"),
+          value: "order_id",
+          align: "center",
+        },
+        {
+          text: this.$t("PLACEHOLDERS.last_message"),
+          value: "last_message.message_text",
+          align: "center",
+        },
+        {
+          text: this.$t("PLACEHOLDERS.data_last_message"),
+          value: "last_message.created_at",
+          align: "center",
+        },
+        {
+          text: this.$t("PLACEHOLDERS.last_message_status"),
+          value: "unread_messages_count",
+          align: "center",
+        },
+        {
+          text: this.$t("TABLES.ContactMessages.actions"),
+          value: "actions",
+          align: "center",
+        },
       ],
 
       tableRows: [],
@@ -234,6 +333,10 @@ export default {
   },
 
   methods: {
+    showReplayModal(replay) {
+      this.dialogReplay = true;
+      this.selectedReplayTextToShow = replay;
+    },
     formatDate(date) {
       if (!date) return "--";
       return new Date(date).toLocaleString();
@@ -266,9 +369,9 @@ export default {
         const res = await this.$axios.get("chat/chats", {
           params: {
             page: this.paginations.current_page,
-            name: this.filterOptions.name,
+            search: this.filterOptions.name,
             order_id: this.filterOptions.order_id,
-            is_read: this.filterOptions.is_read?.value,
+            read: this.filterOptions.is_read?.value,
           },
         });
 

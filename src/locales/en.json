@@ -111,7 +111,8 @@
       "chat": "Chat",
       "title": "Contact Messages",
       "showAll": "All Contact Messages",
-      "show": "Show Message Data"
+      "show": "Show Message Data",
+      "liveChat": "Conversations"
     },
     "AppContent": {
       "newTitle": "Terms and Policy",
@@ -1293,6 +1294,10 @@
   },
 
   "PLACEHOLDERS": {
+    "file": "⚠️ A File has been sent",
+    "last_message": "Last Message",
+    "data_last_message": "Last Message Date",
+    "last_message_status": "Last Message Status",
     "referralDetails": "Referral details",
     "myReferrals": "Referral details",
     "copy": "Copy",

@@ -55,7 +55,7 @@
       "financial_reports": "التقارير المالية"
     },
     "LiveChat": {
-      "title": "الشات",
+      "title": "المحادثات",
       "showAll": "كل المحادثات",
       "add": "بدء محادثة جديد"
     },
@@ -121,7 +121,7 @@
       "title": "رسائل التواصل",
       "showAll": "كل رسائل التواصل",
       "show": "عرض بيانات الرسالة",
-      "liveChat": "الشات"
+      "liveChat": "المحادثات"
     },
     "AppContent": {
       "newTitle": "الشروط والخصوصية",
@@ -1294,6 +1294,10 @@
   },
 
   "PLACEHOLDERS": {
+    "file": "⚠️ تم إرسال ملف",
+    "last_message": "آخر رسالة",
+    "data_last_message": "تاريخ آخر رسالة",
+    "last_message_status": "حالة آخر رسالة",
     "referralDetails": "تفاصيل الإحالة",
     "myReferrals": "تفاصيل الإحالات",
     "copy": "نسخ",

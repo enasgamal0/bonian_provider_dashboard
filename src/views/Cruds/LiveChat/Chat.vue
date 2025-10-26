@@ -1,7 +1,7 @@
 <template>
   <div class="chat-wrapper">
     <!-- Back button -->
-    <div class="col-12 text-end mb-2">
+    <div class="col-12 text-end">
       <v-btn @click="$router.go(-1)" style="color: #1b706f">
         <i class="fas fa-backward"></i>
       </v-btn>
@@ -10,19 +10,22 @@
     <!-- Header -->
     <div class="chat-header">
       <!-- Left user -->
-      <div
-        class="chat-side left"
-      >
-        <img
+      <div class="chat-side left">
+        <!-- <img
           :src="
             chat.user?.image ||
             require('@/assets/media/icons/ui_icons/users.svg')
           "
           class="avatar avatar_user"
-        />
+        /> -->
+       <div class="avatar avatar_user">
+         <v-avatar color="grey">
+              <i class="fal fa-user text-white"></i>
+            </v-avatar>
+       </div>
         <div class="name-meta">
           <h5 class="mb-0">{{ chat.user?.name }}</h5>
-          <small class="text-muted">{{ chat.user?.mobile }}</small>
+          <small>{{ chat.user?.mobile }}</small>
         </div>
       </div>
 
@@ -30,15 +33,15 @@
       <div class="chat-center">
         <template v-if="chat.order_id">
           <div class="order-info">
-            <small class="fs-6 fw-bold">
-              {{ $t(`SIDENAV.orders.number_order`) }} #{{ chat.order_id }}
-            </small>
+            <span class="order-number">
+              {{ $t(`SIDENAV.orders.number_order`) }}: {{ chat.order_id }}
+            </span>
             <v-btn
               small
-              color="primary"
+              color="#1b706f"
               outlined
               @click="viewOrderDetails"
-              class="mt-1"
+              class="view-order-btn"
             >
               <i class="fas fa-eye me-1"></i>
               {{ $t("PLACEHOLDERS.view_order_details") }}
@@ -46,21 +49,6 @@
           </div>
         </template>
       </div>
-
-      <!-- Right admin -->
-      <!-- <div class="chat-side right">
-        <div class="name-meta text-end">
-          <h5 class="mb-0">{{ chat.admin?.name }}</h5>
-          <small class="text-muted">{{ $t(`roles.admin`) }}</small>
-        </div>
-        <img
-          :src="
-            chat.admin?.avatar ||
-            require('@/assets/media/icons/ui_icons/users.svg')
-          "
-          class="avatar avatar_admin"
-        />
-      </div> -->
     </div>
 
     <!-- Messages -->
@@ -76,14 +64,14 @@
           v-for="message in group.messages"
           :key="message.id"
           class="message-wrapper"
-          :class="{
-            received: message.from_id === currentUser.id,
-            sent: message.from_id !== currentUser.id,
-          }"
+          :class="[
+            message.from_id === currentUser.id ? 'received' : 'sent',
+            $i18n.locale === 'ar' ? 'rtl' : 'ltr',
+          ]"
         >
           <div class="message">
             <!-- Message Text -->
-            <p v-if="message.message_text" class="mb-1">
+            <p v-if="message.message_text" class="message-text">
               {{ message.message_text }}
             </p>
 
@@ -117,9 +105,9 @@
                     :class="getFileIcon(file.url || file.path)"
                     class="file-icon"
                   ></i>
-                  <span class="file-name">{{
+                  <!-- <span class="file-name">{{
                     file?.name || getFileName(file.url || file.path)
-                  }}</span>
+                  }}</span> -->
                 </a>
               </div>
             </div>
@@ -134,42 +122,44 @@
     </div>
 
     <!-- File Preview Section -->
-    <div v-if="selectedFiles.length > 0" class="file-preview-section">
-      <div class="file-preview-header">
-        <span>{{ $t("selected_files") }} ({{ selectedFiles.length }})</span>
-        <v-btn icon small @click="clearAllFiles">
-          <i class="fas fa-times"></i>
-        </v-btn>
-      </div>
-      <div class="file-preview-list">
-        <div
-          v-for="(file, index) in selectedFiles"
-          :key="index"
-          class="file-preview-item"
-        >
-          <img
-            v-if="file.preview"
-            :src="file.preview"
-            class="preview-thumb"
-            alt="preview"
-          />
-          <i
-            v-else
-            :class="getFileIconByType(file.type)"
-            class="file-icon-preview"
-          ></i>
-          <span class="file-name-preview">{{ file?.name }}</span>
-          <v-btn icon x-small @click="removeFile(index)">
+    <transition name="slide-up">
+      <div v-if="selectedFiles.length > 0" class="file-preview-section">
+        <!-- <div class="file-preview-header">
+          <span>{{ $t("selected_files") }} ({{ selectedFiles.length }})</span>
+          <v-btn icon x-small @click="clearAllFiles" color="error">
             <i class="fas fa-times"></i>
           </v-btn>
+        </div> -->
+        <div class="file-preview-list">
+          <div
+            v-for="(file, index) in selectedFiles"
+            :key="index"
+            class="file-preview-item"
+          >
+            <img
+              v-if="file.preview"
+              :src="file.preview"
+              class="preview-thumb"
+              alt="preview"
+            />
+            <i
+              v-else
+              :class="getFileIconByType(file.type)"
+              class="file-icon-preview"
+            ></i>
+            <!-- <span class="file-name-preview">{{ file?.name }}</span> -->
+            <v-btn icon x-small @click="removeFile(index)" color="error">
+              <i class="fas fa-times"></i>
+            </v-btn>
+          </div>
         </div>
       </div>
-    </div>
+    </transition>
 
     <!-- Reply Box -->
     <div class="chat-input">
       <!-- Attachment Button -->
-      <v-btn icon color="#1b706f" @click="$refs.fileInput.click()">
+      <v-btn icon color="#1b706f" @click="$refs.fileInput.click()" large style="background-color: #1b6f6d4d">
         <i class="fas fa-paperclip"></i>
       </v-btn>
       <input
@@ -188,10 +178,11 @@
         outlined
         auto-grow
         rows="1"
-        color="primary"
-        background-color="grey lighten-4"
+        color="#1b706f"
+        background-color="white"
         hide-details
         no-resize
+        class="message-input"
         @keydown.enter.exact.prevent="sendMessage"
       />
 
@@ -201,6 +192,9 @@
         @click="sendMessage"
         :loading="sending"
         :disabled="!canSend"
+        fab
+        small
+        elevation="2"
       >
         <i class="fas fa-paper-plane text-white"></i>
       </v-btn>
@@ -228,7 +222,6 @@ export default {
       if (!this.chat.messages) return [];
       const groups = {};
       this.chat.messages?.forEach((msg) => {
-        // fallback if no created_at
         const dateKey = msg?.created_at;
         if (!groups[dateKey]) groups[dateKey] = [];
         groups[dateKey].push(msg);
@@ -256,10 +249,8 @@ export default {
           url: `chat/chats/${this.$route.params?.id}`,
         });
         this.chat = res.data.data?.chat;
-        console.log(this.chat);
         this.currentUser = this.chat?.provider;
 
-        // Auto-scroll if near bottom
         const container = this.$refs.messagesContainer;
         if (container) {
           const isNearBottom =
@@ -286,7 +277,6 @@ export default {
           REQUEST_DATA.append("message", this.newMessage);
         }
 
-        // Append files
         this.selectedFiles?.forEach((file, index) => {
           REQUEST_DATA.append(`resources[${index}]`, file.file);
         });
@@ -301,7 +291,6 @@ export default {
         this.selectedFiles = [];
         this.scrollToBottom();
 
-        // Refresh chat to show new message
         await this.fetchChat();
       } catch (error) {
         console.error("Failed to send message:", error);
@@ -322,7 +311,6 @@ export default {
           preview: null,
         };
 
-        // Create preview for images
         if (file.type.startsWith("image/")) {
           const reader = new FileReader();
           reader.onload = (e) => {
@@ -334,7 +322,6 @@ export default {
         this.selectedFiles.push(fileObj);
       });
 
-      // Reset input
       event.target.value = "";
     },
 
@@ -405,7 +392,12 @@ export default {
     scrollToBottom() {
       this.$nextTick(() => {
         const container = this.$refs.messagesContainer;
-        if (container) container.scrollTop = container.scrollHeight;
+        if (container) {
+          container.scrollTo({
+            top: container.scrollHeight,
+            behavior: "smooth",
+          });
+        }
       });
     },
 
@@ -428,9 +420,9 @@ export default {
   },
   mounted() {
     this.fetchChat();
-    // this.startPolling();
 
-    Echo.channel(`chat.${this.$route.params.id}`).listen(`.new_chat`, (e) => {
+    Echo.channel(`private-chat.${this.$route.params.id}`).listen(`.new_chat`, (e) => {
+      console.log("eventt", e)
       this.chat.messages.push(e.message);
       this.scrollToBottom();
     });
@@ -447,6 +439,16 @@ export default {
   flex-direction: column;
   height: 77vh;
   overflow: hidden;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Back Button */
+.back-button-container {
+  padding: 12px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #e9ecef;
 }
 
 /* Header */
@@ -454,9 +456,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e9e9ee;
-  background: #fff;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-bottom: 2px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .chat-side {
@@ -467,79 +470,110 @@ export default {
 }
 
 .chat-side.left {
-  /* cursor: pointer; */
   transition: opacity 0.2s;
 }
 
 .chat-side.left:hover {
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 .order-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+}
+
+.order-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.view-order-btn {
+  font-size: 12px;
 }
 
 .avatar {
-  width: 45px;
-  height: 45px;
   border-radius: 50%;
   flex-shrink: 0;
   object-fit: cover;
-  border: 2px solid #e9e9ee;
+  border: 3px solid #1b706f;
+  box-shadow: 0 2px 6px rgba(27, 112, 111, 0.2);
 }
 
 .name-meta h5 {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: #212529;
+  margin: 0;
 }
 
 .name-meta small {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #6c757d;
 }
 
 /* Messages */
 .chat-messages {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 16px 16px 12px;
-  background: #f9fafb;
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e0 #f5f5f5;
+  padding: 20px 16px;
+  background: #f8f9fa;
+  scroll-behavior: smooth;
 }
 
 .chat-messages::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #f1f3f5;
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
-  border-radius: 3px;
+  background: #adb5bd;
+  border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #868e96;
 }
 
 /* Date Separator */
 .date-separator {
   text-align: center;
-  margin: 20px 0;
+  margin: 24px 0 16px;
 }
 
 .date-separator span {
-  background: #e5e7eb;
-  color: #374151;
-  padding: 5px 14px;
-  border-radius: 999px;
+  background: #ffffff;
+  color: #6c757d;
+  padding: 6px 16px;
+  border-radius: 20px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Message Bubbles */
 .message-wrapper {
   display: flex;
   margin-bottom: 12px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .message-wrapper.sent {
@@ -547,47 +581,77 @@ export default {
 }
 
 .message {
-  max-width: 68%;
-  padding: 10px 14px;
-  border-radius: 14px;
+  max-width: 65%;
+  padding: 12px 16px;
+  border-radius: 16px;
   word-wrap: break-word;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.message-wrapper.sent .message {
-  background: var(--chat-client-bg, #e6e8e9);
-  color: var(--chat-admin-text, #1e40af);
-  border-bottom-left-radius: 4px;
+.message:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.received p {
+  color: white !important;
 }
 
 .message-wrapper.received .message {
-  background: var(--chat-admin-bg, #dbeafe);
-  color: var(--chat-client-text, #111827);
-  border: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #1b706f 0%, #156160 100%);
+  color: #212529;
+}
+
+.right_border .received .message {
   border-bottom-right-radius: 4px;
+}
+
+.left_border {
+  border-bottom-left-radius: 4px;
+}
+
+.message-wrapper.sent .message {
+  background: #ffffff;
+  color: #ffffff;
+  border: 1px solid #dee2e6;
+}
+
+.message-wrapper.sent .message {
+  color: #ffffff;
+}
+
+.message-text {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 14px;
 }
 
 /* Attachments */
 .attachments-container {
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .attachment-item {
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .attachment-item:hover {
   transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .image-preview {
-  max-width: 200px;
-  border-radius: 8px;
+  max-width: 220px;
+  border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .image-preview img {
@@ -599,15 +663,25 @@ export default {
 .file-icon-wrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.message-wrapper.received .file-icon-wrapper {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .file-icon {
-  font-size: 24px;
+  font-size: 26px;
   color: #1b706f;
+}
+
+.message-wrapper.received .file-icon {
+  color: #ffffff;
 }
 
 .file-name {
@@ -616,96 +690,137 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #495057;
+}
+
+.message-wrapper.sent .file-name {
+  color: #ffffff;
 }
 
 .timestamp {
   display: block;
   font-size: 11px;
-  opacity: 0.65;
+  opacity: 0.75;
   margin-top: 6px;
   text-align: end;
+  font-weight: 500;
+}
+
+.message-wrapper.received .timestamp {
+  color: #ffffff !important;
+}
+
+.message-wrapper.sent .timestamp {
+  color: #212529 !important;
 }
 
 /* File Preview Section */
 .file-preview-section {
-  border-top: 1px solid #e9e9ee;
-  background: #f9fafb;
-  padding: 10px 12px;
+  border-top: 2px solid #e9ecef;
+  background: #ffffff;
+  padding: 12px 16px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-up-enter,
+.slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
 }
 
 .file-preview-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-size: 13px;
   font-weight: 600;
-  color: #374151;
+  color: #495057;
 }
 
 .file-preview-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .file-preview-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 12px;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.file-preview-item:hover {
+  background: #e9ecef;
 }
 
 .preview-thumb {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .file-icon-preview {
-  font-size: 24px;
+  font-size: 28px;
   color: #1b706f;
 }
 
 .file-name-preview {
-  max-width: 120px;
+  max-width: 130px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #495057;
+  font-weight: 500;
 }
 
 /* Input Section */
 .chat-input {
-  position: sticky;
-  bottom: 0;
-  flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border-top: 1px solid #e9e9ee;
-  background: #fff;
+  gap: 10px;
+  padding: 16px;
+  background: #ffffff;
+  border-top: 2px solid #e9ecef;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.chat-input .v-textarea {
+.message-input {
   flex: 1;
 }
 
-.chat-input .v-btn {
-  min-width: 44px;
-  height: 44px;
+.message-input >>> .v-input__control {
+  border-radius: 24px;
+}
+
+.message-input >>> textarea {
+  font-size: 14px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .chat-header {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .chat-side.left {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .chat-center {
@@ -713,7 +828,141 @@ export default {
   }
 
   .message {
+    max-width: 80%;
+  }
+
+  .avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .name-meta h5 {
+    font-size: 14px;
+  }
+
+  .name-meta small {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .message {
     max-width: 85%;
   }
+
+  .chat-input {
+    padding: 12px;
+    gap: 8px;
+  }
+}
+
+/* Default bubble rounding */
+.message {
+  border-radius: 16px;
+}
+
+/* LTR layout (English) */
+.ltr.sent .message {
+  border-bottom-right-radius: 4px;
+}
+
+.ltr.received .message {
+  border-bottom-left-radius: 4px;
+}
+
+/* RTL layout (Arabic) */
+.rtl.sent .message {
+  border-bottom-left-radius: 4px;
+}
+
+.rtl.received .message {
+  border-bottom-right-radius: 4px;
+}
+
+.dark_theme .chat-wrapper {
+  background: #1f1f1f;
+  box-shadow: none;
+}
+
+/* Header */
+.dark_theme .chat-header {
+  background: #2a2a2a;
+  border-bottom-color: #333;
+}
+
+.dark_theme .name-meta h5 {
+  color: #ffffff;
+}
+
+.dark_theme .name-meta small {
+  color: #bfbfbf;
+}
+
+/* Messages container */
+.dark_theme .chat-messages {
+  background: #1f1f1f;
+}
+
+/* Sent (me) message bubble */
+.dark_theme .message-wrapper.sent .message {
+  background: #2e2e2e;
+  border-color: #3a3a3a;
+  color: #ffffff;
+}
+
+/* Received message bubble */
+.dark_theme .message-wrapper.received .message {
+  background: linear-gradient(135deg, #1b706f 0%, #156160 100%);
+  color: #ffffff;
+}
+
+/* Attachments */
+.dark_theme .file-icon-wrapper {
+  background: #2e2e2e;
+}
+
+.dark_theme .file-icon-wrapper .file-icon {
+  color: #85d1cf;
+}
+
+/* Timestamp */
+.dark_theme .timestamp {
+  color: #cfcfcf !important;
+}
+
+/* Input Section */
+.dark_theme .chat-input {
+  background: #2a2a2a;
+  border-top-color: #333;
+}
+
+.dark_theme .v-textarea textarea {
+  color: #ffffff !important;
+  background: #2e2e2e !important;
+}
+
+.dark_theme .v-input__control {
+  background: #2e2e2e !important;
+}
+
+/* File preview section */
+.dark_theme .file-preview-section {
+  background: #2a2a2a;
+  border-top-color: #333;
+}
+
+.dark_theme .file-preview-item {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #ffffff;
+}
+.dark_theme .order-number {
+  color: #ffffff !important;
+}
+.dark_theme .message-wrapper.sent .timestamp {
+  color: #ffffff !important;
+}
+.theme--light.v-btn.v-btn--disabled.v-btn--has-bg[data-v-631411bf]{
+  background-color: #1b706f !important;
 }
 </style>
