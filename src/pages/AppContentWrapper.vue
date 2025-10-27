@@ -104,7 +104,7 @@ export default {
           if (payload) {
             // console.log("SOCKET PAYLOAD ==>", payload);
 
-            this.getNotifications();
+            // this.getNotifications();
             this.$message.open({
               content: payload.title,
               icon: () => <i class="fad fa-bell notification_icon"></i>,

@@ -302,7 +302,7 @@
   icon
   elevation="8"
   :class="['floating-chat-btn', lang === 'ar' ? 'left' : 'right']"
-  @click="toggleChatDialog"
+  @click.stop="handleChatButton()"
 >
   <div class="rings-wrapper">
     <span class="ring ring1"></span>
@@ -327,6 +327,7 @@ export default {
   name: "ShowOrderDetails",
   data() {
     return {
+      chat_id: null,
       lang: this.$i18n.locale,
       // Start:: Loader Control Data
       isWaitingRequest: false,
@@ -368,9 +369,9 @@ export default {
   },
     handleChatButton() {
       if (this.data.chat_before) {
-        this.continueChatWithUser();
+        this.$router.push(`/live-chat/chat/${this.data.chat_id}`);
       } else {
-        this.showPaymentDialog = true;
+        this.showPaymentDialog = !this.showPaymentDialog;
       }
     },
 
@@ -393,6 +394,7 @@ export default {
         this.data.attachments = orderData.attachments || [];
         this.data.user = orderData.user;
         this.data.chat_before = orderData.chat_before || false;
+        this.data.chat_id = orderData.chat_id || false;
       } catch (error) {
         console.error("Error fetching order details:", error);
         this.$toast.error(
@@ -464,16 +466,6 @@ export default {
     },
     // End:: Open Chat
 
-    // Start:: Continue Chat with User
-    continueChatWithUser() {
-      this.$router.push({
-        name: "ChatShow",
-        params: {
-          orderId: this.$route.params.id,
-          userId: this.data.user?.id,
-        },
-      });
-    },
     // End:: Continue Chat with User
 
     // Start:: Open Image Preview
