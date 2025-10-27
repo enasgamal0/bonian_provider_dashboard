@@ -99,7 +99,7 @@
           <p class="blue-grey--text text--darken-1 fs-3" v-if="!item.id">-</p>
           <p v-else>
             {{
-              (paginations.current_page - 1) * paginations.items_per_page +
+              (paginations.current_page - 1 || 0) * (paginations.items_per_page || 0) +
               index +
               1
             }}
@@ -398,19 +398,19 @@ export default {
           },
         });
         this.loading = false;
-        this.tableRows = res.data.data.data;
-        this.paginations.last_page = res.data.data.meta.last_page;
-        this.paginations.items_per_page = res.data.data.meta.per_page;
+        this.tableRows = res.data.data.referralProviderCodes;
+        this.paginations.last_page = res.data.data?.meta?.last_page;
+        this.paginations.items_per_page = res.data.data?.meta?.per_page;
         this.referralCodeData = {
-          code: res.data.data.data[0].provider?.code,
-          total_points: res.data.data?.total_points || 0,
-          total_referrals: res.data.data.meta.total || 0,
+          code: res.data.data?.referralProviderCodes[0]?.provider?.code,
+          total_points: res.data?.data?.total_points || 0,
+          total_referrals: res.data.data?.meta?.total || 0,
         };
       } catch (error) {
         this.loading = false;
         console.log(error.response?.data?.message);
         this.$message.error(
-          error.response?.data?.message || this.$t("MESSAGES.somethingWrong")
+          error.response?.data?.message
         );
       }
     },
