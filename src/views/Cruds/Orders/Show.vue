@@ -150,7 +150,7 @@
           </div> -->
 
           <div class="col-12 mt-3 text-center">
-            <a :href="'/orders/create/' + id">
+            <a :href="'/provider-dashboard/orders/create/' + id">
               <v-btn
                 color="#1b706f"
                 size="large"

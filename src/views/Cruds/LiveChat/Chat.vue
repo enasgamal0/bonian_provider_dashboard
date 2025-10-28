@@ -62,10 +62,10 @@
         <!-- Messages -->
         <div
           v-for="message in group.messages"
-          :key="message.id"
+          :key="message?.id"
           class="message-wrapper"
           :class="[
-            message.from_id === currentUser.id ? 'received' : 'sent',
+            message?.from_id === currentUser?.id ? 'received' : 'sent',
             $i18n.locale === 'ar' ? 'rtl' : 'ltr',
           ]"
         >
@@ -421,7 +421,7 @@ export default {
   mounted() {
     this.fetchChat();
 
-    Echo.channel(`private-chat.${this.$route.params.id}`).listen(`.new_chat`, (e) => {
+    Echo.channel(`private-chat.${this.$route.params?.id}`).listen(`.new_chat`, (e) => {
       console.log("eventt", e)
       this.chat.messages.push(e.message);
       this.scrollToBottom();
