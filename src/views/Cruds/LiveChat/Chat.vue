@@ -215,6 +215,7 @@ export default {
       selectedFiles: [],
       sending: false,
       pollInterval: null,
+      echoChannel: null,
     };
   },
   computed: {
@@ -417,18 +418,66 @@ export default {
         }
       }, 5000);
     },
+
+    setupPusherListener() {
+      const chatId = this.$route.params?.id;
+      if (!chatId || !window.Echo) return;
+
+      // Clean up existing listener
+      if (this.echoChannel) {
+        window.Echo.leave(`chat.${chatId}`);
+        this.echoChannel = null;
+      }
+
+      // Listen to the public channel chat.{id} with event new_chat
+      this.echoChannel = window.Echo.channel(`chat.${chatId}`);
+      
+      this.echoChannel.listen(".new_chat", (e) => {
+        console.log("New chat event received:", e);
+        
+        if (e.message && e.chat) {
+          // Add the new message to the messages array if it doesn't already exist
+          const messageExists = this.chat.messages.some(
+            (msg) => msg.id === e.message.id
+          );
+          
+          if (!messageExists) {
+            this.chat.messages.push(e.message);
+            
+            // Update chat data if provided
+            if (e.chat) {
+              this.chat.last_message = e.chat.last_message;
+              this.chat.unread_messages_count = e.chat.unread_messages_count;
+            }
+            
+            this.scrollToBottom();
+          }
+        }
+      });
+
+      // Stop polling since we're using Pusher
+      if (this.pollInterval) {
+        clearInterval(this.pollInterval);
+        this.pollInterval = null;
+      }
+    },
   },
   mounted() {
     this.fetchChat();
-
-    Echo.channel(`private-chat.${this.$route.params?.id}`).listen(`.new_chat`, (e) => {
-      console.log("eventt", e)
-      this.chat.messages.push(e.message);
-      this.scrollToBottom();
-    });
+    this.setupPusherListener();
   },
   beforeDestroy() {
-    if (this.pollInterval) clearInterval(this.pollInterval);
+    // Clean up polling
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+      this.pollInterval = null;
+    }
+    
+    // Clean up Pusher listener
+    if (this.echoChannel && this.$route.params?.id) {
+      window.Echo.leave(`chat.${this.$route.params?.id}`);
+      this.echoChannel = null;
+    }
   },
 };
 </script>

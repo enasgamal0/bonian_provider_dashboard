@@ -52,7 +52,7 @@ window.Echo = new Echo({
   forceTLS: true,
   disableStats: true,
   enabledTransports: ["ws", "wss"],
-  authEndpoint: "https://backend.Bonian.com/broadcasting/auth",
+  authEndpoint: "https://backend.bonian.moltaqadev.com/broadcasting/auth",
   auth: {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("bonian_provider_dashboard_user_token")}`,

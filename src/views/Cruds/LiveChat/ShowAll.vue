@@ -96,11 +96,11 @@
           {{ $t("TABLES.noData") }}
         </template>
 
-        <!-- Start:: User -->
-        <template v-slot:[`item.user.name`]="{ item }">
-          <div class="d-flex align-center justify-center gap-2">
+        <!-- Start:: User Image -->
+        <template v-slot:[`item.user.image`]="{ item }">
+          <div class="d-flex align-center justify-center">
             <img
-              v-if="item.user.image"
+              v-if="item.user?.image"
               :src="item.user.image"
               alt="user"
               class="rounded-circle"
@@ -110,10 +110,16 @@
             <v-avatar v-else color="grey" size="40">
               <i class="fal fa-user text-white"></i>
             </v-avatar>
-            <span>{{ item.user.name }}</span>
           </div>
         </template>
-        <!-- End:: User -->
+        <!-- End:: User Image -->
+
+        <!-- Start:: User Name -->
+        <template v-slot:[`item.user.name`]="{ item }">
+          <span v-if="item.user?.name">{{ item.user.name }}</span>
+          <span v-else class="text-danger">{{ $t("TABLES.noData") }}</span>
+        </template>
+        <!-- End:: User Name -->
 
         <!-- Start:: Order ID -->
         <template v-slot:[`item.order_id`]="{ item }">
@@ -291,7 +297,12 @@ export default {
 
       tableHeaders: [
         {
-          text: this.$t("PLACEHOLDERS.userData"),
+          text: this.$t("PLACEHOLDERS.userImage"),
+          value: "user.image",
+          align: "center",
+        },
+        {
+          text: this.$t("PLACEHOLDERS.userName"),
           value: "user.name",
           align: "center",
         },
@@ -323,6 +334,7 @@ export default {
       ],
 
       tableRows: [],
+      echoChannels: [],
 
       paginations: {
         current_page: 1,
@@ -377,10 +389,89 @@ export default {
 
         this.tableRows = res.data.data;
         this.paginations.last_page = res.data.meta.last_page;
+        
+        // Setup Pusher listeners for all chats
+        this.setupPusherListeners();
       } catch (err) {
         console.error(err);
       } finally {
         this.loading = false;
+      }
+    },
+
+    setupPusherListeners() {
+      if (!window.Echo) return;
+
+      // Clean up existing listeners
+      this.cleanupPusherListeners();
+
+      // Listen to user-chat channels for each chat's user
+      this.tableRows.forEach((chat) => {
+        if (chat.user && chat.user.id) {
+          const channelName = `user-chat.${chat.user.id}`;
+          const echoChannel = window.Echo.channel(channelName);
+          
+          echoChannel.listen(".user.chat", (e) => {
+            console.log("User chat event received:", e);
+            
+            if (e.chat) {
+              // Find and update the corresponding chat in the list
+              const chatIndex = this.tableRows.findIndex(
+                (row) => row.id === e.chat.id
+              );
+              
+              if (chatIndex !== -1) {
+                // Update the chat data
+                this.$set(this.tableRows, chatIndex, {
+                  ...this.tableRows[chatIndex],
+                  ...e.chat,
+                });
+              } else {
+                // If it's a new chat, refresh the list
+                this.setTableRows();
+              }
+            }
+          });
+
+          this.echoChannels.push({ channel: echoChannel, name: channelName });
+        }
+
+        // Also listen to chat.{chatId} for real-time updates
+        if (chat.id) {
+          const channelName = `chat.${chat.id}`;
+          const echoChannel = window.Echo.channel(channelName);
+          
+          echoChannel.listen(".new_chat", (e) => {
+            console.log("Chat update event received:", e);
+            
+            if (e.chat) {
+              // Find and update the corresponding chat in the list
+              const chatIndex = this.tableRows.findIndex(
+                (row) => row.id === e.chat.id
+              );
+              
+              if (chatIndex !== -1) {
+                // Update the chat data
+                this.$set(this.tableRows, chatIndex, {
+                  ...this.tableRows[chatIndex],
+                  last_message: e.chat.last_message,
+                  unread_messages_count: e.chat.unread_messages_count,
+                });
+              }
+            }
+          });
+
+          this.echoChannels.push({ channel: echoChannel, name: channelName });
+        }
+      });
+    },
+
+    cleanupPusherListeners() {
+      if (window.Echo && this.echoChannels.length > 0) {
+        this.echoChannels.forEach(({ name }) => {
+          window.Echo.leave(name);
+        });
+        this.echoChannels = [];
       }
     },
   },
@@ -390,6 +481,11 @@ export default {
       this.paginations.current_page = +this.$route.query.page;
     }
     this.setTableRows();
+  },
+
+  beforeDestroy() {
+    // Clean up Pusher listeners
+    this.cleanupPusherListeners();
   },
 };
 </script>

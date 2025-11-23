@@ -257,10 +257,10 @@
                 text-transform: none;
                 font-size: 15px;
               "
-              @click="openChat"
-              :disabled="myPoints < paymentAmountPoints"
+              @click="openChatByPoints"
+              :disabled="payment_loading || myPoints < paymentAmountPoints"
             >
-              <!-- <i class="fas fa-comments me-2"></i> -->
+                <!-- <i class="fas fa-comments me-2"></i> -->
               {{ $t("PLACEHOLDERS.points_pay") }}
             </v-btn>
           </div>
@@ -270,30 +270,12 @@
     <!-- End:: Payment Dialog -->
 
     <!-- Start:: Image Preview Dialog -->
-    <v-dialog v-model="imagePreviewDialog" max-width="900">
-      <v-card class="rounded-xl" elevation="8">
-        <v-card-actions
-          class="justify-end pa-3"
-          style="background-color: #f5f5f5"
-        >
-          <v-btn
-            icon
-            @click="imagePreviewDialog = false"
-            variant="text"
-            size="large"
-            style="color: #1b706f"
-          >
-            <i class="fas fa-times" style="font-size: 20px"></i>
-          </v-btn>
-        </v-card-actions>
-        <v-card-text class="pa-0">
-          <img
-            :src="previewImageUrl"
-            style="width: 100%; height: auto; display: block"
+    <image-modal
+            v-if="imagePreviewDialog"
+            :modalIsOpen="imagePreviewDialog"
+            :modalImage="previewImageUrl"
+            @toggleModal="imagePreviewDialog = !imagePreviewDialog"
           />
-        </v-card-text>
-      </v-card>
-    </v-dialog>
     <!-- End:: Image Preview Dialog -->
 
     <!-- Floating Chat Button -->
@@ -331,6 +313,7 @@ export default {
       lang: this.$i18n.locale,
       // Start:: Loader Control Data
       isWaitingRequest: false,
+      payment_loading: false,
       // End:: Loader Control Data
       // Start:: Dialog Control
       showPaymentDialog: false,
@@ -397,9 +380,13 @@ export default {
         this.data.chat_id = orderData.chat_id || false;
       } catch (error) {
         console.error("Error fetching order details:", error);
-        this.$toast.error(
-          error.response?.data?.message || this.$t("MESSAGES.errorFetchingData")
-        );
+        this.$iziToast.error({
+          timeout: 2000,
+          message: error.response?.data?.message || this.$t("MESSAGES.errorFetchingData"),
+          messageSize: "22",
+          position: this.$t("iziToastConfigs.position"),
+          rtl: this.$t("iziToastConfigs.dir"),
+        });
       } finally {
         this.isWaitingRequest = false;
       }
@@ -441,6 +428,42 @@ export default {
       }
     },
     // End:: Fetch My Points
+
+    // Start:: Open Chat By Points
+    async openChatByPoints() {
+      this.payment_loading = true;
+      try {
+        const res = await this.$axios({
+          method: "POST",
+          url: "chat/chats/open_chat",
+          data: {
+            order_id: this.$route.params?.id,
+          },
+        });
+        this.$iziToast.success({
+          timeout: 2000,
+          message: res.data.message || this.$t("MESSAGES.successOpeningChatByPoints"),
+          messageSize: "16",
+          position: this.$t("iziToastConfigs.position"),
+          rtl: this.$t("iziToastConfigs.dir"),
+        });
+        this.showPaymentDialog = false;
+        this.$router.push(`/live-chat/chat/${res.data.data?.chat_id}`);
+        this.fetchMyPoints();
+        this.payment_loading = false;
+      } catch (error) {
+        this.$iziToast.error({
+          timeout: 2000,
+          message: error.response?.data?.message || this.$t("MESSAGES.error"),
+          messageSize: "16",
+          position: this.$t("iziToastConfigs.position"),
+          rtl: this.$t("iziToastConfigs.dir"),
+        });
+        this.showPaymentDialog = false;
+        this.payment_loading = false;
+      }
+    },
+    // End:: Open Chat By Points
 
     // Start:: View Profile (Navigate to Payment)
     viewProfile() {
