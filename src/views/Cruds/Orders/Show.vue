@@ -448,7 +448,7 @@ export default {
           rtl: this.$t("iziToastConfigs.dir"),
         });
         this.showPaymentDialog = false;
-        this.$router.push(`/live-chat/chat/${res.data.data?.chat_id}`);
+        this.$router.push(`/live-chat/chat/${this.data.chat_id}`);
         this.fetchMyPoints();
         this.payment_loading = false;
       } catch (error) {
