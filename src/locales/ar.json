@@ -2567,6 +2567,7 @@
   },
 
   "MESSAGES": {
+    "chat_read_only": "تم انتهاء الوقت المسموح للرد على المحادثة وأصبحت للقراءة فقط",
     "offerSentSuccessfully": "تم إرسال عرض السعر بنجاح",
     "mustAddProductsOrAttachments": "يجب إضافة منتجات في الجدول أو رفع مرفقات (أحدهما على الأقل)",
     "acceptedFormats": "الصيغ المقبولة",

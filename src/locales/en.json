@@ -2563,6 +2563,7 @@
   },
 
   "MESSAGES": {
+    "chat_read_only": "Time allowed to reply to this chat has expired - this chat is read only now",
     "offerSentSuccessfully": "Offer sent successfully",
     "mustAddProductsOrAttachments": "You must add products in the table or upload attachments (at least one)",
     "acceptedFormats": "Accepted formats",

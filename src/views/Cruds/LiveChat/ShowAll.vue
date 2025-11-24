@@ -138,7 +138,7 @@
               <i class="fal fa-file-alt"></i>
             </button>
           </div>
-          <div class="actions" v-if="!item.last_message?.message_text || (item.last_message?.message_text == ' ' && item.last_message?.resources?.length > 0)">
+          <div class="actions" v-if="item.last_message?.message_text == ' ' && item.last_message?.resources?.length > 0">
             <button
               class="btn_show"
               @click="showReplayModal($t('PLACEHOLDERS.file'))"
@@ -164,7 +164,7 @@
         <!-- Start:: Unread Indicator -->
         <template v-slot:[`item.unread_messages_count`]="{ item }">
           <v-chip
-            v-if="item.unread_messages_count > 0"
+            v-if="item.unread_messages_count == 0"
             color="green"
             text-color="white"
             small
@@ -249,7 +249,7 @@
     </main>
 
     <!-- =========== Start:: Pagination =========== -->
-    <div class="pagination_container text-center mt-3 mb-0">
+    <!-- <div class="pagination_container text-center mt-3 mb-0">
       <v-pagination
         class="py-0"
         square
@@ -258,7 +258,7 @@
         :total-visible="6"
         @input="updateRouterQueryParam($event)"
       />
-    </div>
+    </div> -->
     <!-- =========== End:: Pagination =========== -->
   </div>
 </template>

@@ -141,6 +141,7 @@ export default {
         message_type: null,
         message_date: null,
         message_content: null,
+        is_read: null,
         send_reply: null,
       },
       regions: [],
@@ -166,6 +167,7 @@ export default {
         this.data.message_type = res.data.data.data.type;
         this.data.message_date = res.data.data.data.created_at;
         this.data.message_content = res.data.data.data.message;
+        this.data.is_read = res.data.data.data.is_read;
         this.data.reply = res.data.data.data.reply;
         if (res.data.data.data.reply) {
           this.hasReply = true;

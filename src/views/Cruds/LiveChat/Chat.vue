@@ -157,7 +157,7 @@
     </transition>
 
     <!-- Reply Box -->
-    <div class="chat-input">
+    <div class="chat-input" v-if="chat.is_read == 0">
       <!-- Attachment Button -->
       <v-btn icon color="#1b706f" @click="$refs.fileInput.click()" large style="background-color: #1b6f6d4d">
         <i class="fas fa-paperclip"></i>
@@ -199,6 +199,81 @@
         <i class="fas fa-paper-plane text-white"></i>
       </v-btn>
     </div>
+      <!-- Start:: Read-only Message (when is_read === 1) -->
+    <div class="single_step_form_content_wrapper" v-if="chat.is_read === 1">
+      <div class="alert text-center" style="padding: 15px; font-size: 14px; color: #1b706f; background-color: #1b706f1a; border-radius: 10px; border: 1px solid #1b706f;">
+        {{ $t("MESSAGES.chat_read_only") }}
+      </div>
+    <!-- END:: Read-only Message -->
+    </div>
+
+    <!-- Payment Status Dialog -->
+    <v-dialog v-model="showPaymentStatusDialog" max-width="500" persistent>
+      <v-card class="rounded-xl" elevation="8">
+        <v-card-text class="py-6 px-5">
+          <div class="text-center mb-4">
+            <div
+              class="payment-icon-wrapper mx-auto"
+              :style="{
+                width: '80px',
+                height: '80px',
+                background: isPaymentSuccess 
+                  ? 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)'
+                  : 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: isPaymentSuccess
+                  ? '0 4px 12px rgba(40, 167, 69, 0.15)'
+                  : '0 4px 12px rgba(220, 53, 69, 0.15)'
+              }"
+            >
+              <i
+                :class="isPaymentSuccess ? 'fas fa-check-circle' : 'fas fa-times-circle'"
+                :style="{
+                  fontSize: '36px',
+                  color: isPaymentSuccess ? '#28a745' : '#dc3545'
+                }"
+              ></i>
+            </div>
+          </div>
+
+          <p
+            class="text-center payment-message mb-4"
+            :style="{
+              fontSize: '16px',
+              lineHeight: '1.6',
+              color: isPaymentSuccess ? '#28a745' : '#dc3545',
+              fontWeight: '600'
+            }"
+          >
+            {{ isPaymentSuccess ? $t("MESSAGES.paymentSuccess") : $t("MESSAGES.paymentFailed") }}
+          </p>
+
+          <div class="text-center">
+            <v-btn
+              block
+              size="large"
+              elevation="2"
+              class="rounded-lg"
+              :style="{
+                background: 'linear-gradient(135deg, #1b706f 0%, #15605f 100%)',
+                color: 'white',
+                fontWeight: '600',
+                letterSpacing: '0.5px',
+                textTransform: 'none',
+                fontSize: '15px'
+              }"
+              @click="closePaymentStatusDialog"
+            >
+              {{ $t("BUTTONS.ok") }}
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- End:: Payment Status Dialog -->
   </div>
 </template>
 
@@ -216,6 +291,9 @@ export default {
       sending: false,
       pollInterval: null,
       echoChannel: null,
+      showPaymentStatusDialog: false,
+      isPaymentSuccess: false,
+      paymentStatusTimeout: null,
     };
   },
   computed: {
@@ -461,10 +539,43 @@ export default {
         this.pollInterval = null;
       }
     },
+
+    checkPaymentStatus() {
+      const successParam = this.$route.query.success;
+      if (successParam !== undefined) {
+        this.isPaymentSuccess = successParam === "true" || successParam === true;
+        
+        // Remove the success query parameter from URL immediately
+        const query = { ...this.$route.query };
+        delete query.success;
+        this.$router.replace({ query });
+        
+        // Show the dialog
+        this.showPaymentStatusDialog = true;
+        
+        // Auto-close after 3 seconds
+        if (this.paymentStatusTimeout) {
+          clearTimeout(this.paymentStatusTimeout);
+        }
+        this.paymentStatusTimeout = setTimeout(() => {
+          this.closePaymentStatusDialog();
+        }, 3000);
+      }
+    },
+
+    closePaymentStatusDialog() {
+      this.showPaymentStatusDialog = false;
+      // Clear the timeout if it exists
+      if (this.paymentStatusTimeout) {
+        clearTimeout(this.paymentStatusTimeout);
+        this.paymentStatusTimeout = null;
+      }
+    },
   },
   mounted() {
     this.fetchChat();
     this.setupPusherListener();
+    this.checkPaymentStatus();
   },
   beforeDestroy() {
     // Clean up polling
@@ -477,6 +588,12 @@ export default {
     if (this.echoChannel && this.$route.params?.id) {
       window.Echo.leave(`chat.${this.$route.params?.id}`);
       this.echoChannel = null;
+    }
+    
+    // Clean up payment status timeout
+    if (this.paymentStatusTimeout) {
+      clearTimeout(this.paymentStatusTimeout);
+      this.paymentStatusTimeout = null;
     }
   },
 };

@@ -238,8 +238,10 @@
                 text-transform: none;
                 font-size: 15px;
               "
-              @click="openChat"
+              :disabled="payment_loading || payment_loading_url"
+              @click.prevent="open_chat_payment"
             >
+            <!--  -->
               <!-- <i class="fas fa-comments me-2"></i> -->
               {{ $t("PLACEHOLDERS.pay") }}
             </v-btn>
@@ -257,8 +259,8 @@
                 text-transform: none;
                 font-size: 15px;
               "
-              @click="openChatByPoints"
-              :disabled="payment_loading || myPoints < paymentAmountPoints"
+              @click.prevent="openChatByPoints"
+              :disabled="payment_loading || payment_loading_url || myPoints < paymentAmountPoints"
             >
                 <!-- <i class="fas fa-comments me-2"></i> -->
               {{ $t("PLACEHOLDERS.points_pay") }}
@@ -301,6 +303,74 @@
   @click="closeDialogs"
 ></div>
 
+    <!-- Payment Status Dialog -->
+    <v-dialog v-model="showPaymentStatusDialog" max-width="500" persistent>
+      <v-card class="rounded-xl" elevation="8">
+        <v-card-text class="py-6 px-5">
+          <div class="text-center mb-4">
+            <div
+              class="payment-icon-wrapper mx-auto"
+              :style="{
+                width: '80px',
+                height: '80px',
+                background: isPaymentSuccess 
+                  ? 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)'
+                  : 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: isPaymentSuccess
+                  ? '0 4px 12px rgba(40, 167, 69, 0.15)'
+                  : '0 4px 12px rgba(220, 53, 69, 0.15)'
+              }"
+            >
+              <i
+                :class="isPaymentSuccess ? 'fas fa-check-circle' : 'fas fa-times-circle'"
+                :style="{
+                  fontSize: '36px',
+                  color: isPaymentSuccess ? '#28a745' : '#dc3545'
+                }"
+              ></i>
+            </div>
+          </div>
+
+          <p
+            class="text-center payment-message mb-4"
+            :style="{
+              fontSize: '16px',
+              lineHeight: '1.6',
+              color: isPaymentSuccess ? '#28a745' : '#dc3545',
+              fontWeight: '600'
+            }"
+          >
+            {{ isPaymentSuccess ? $t("MESSAGES.paymentSuccess") : $t("MESSAGES.paymentFailed") }}
+          </p>
+
+          <div class="text-center">
+            <v-btn
+              block
+              size="large"
+              elevation="2"
+              class="rounded-lg"
+              :style="{
+                background: 'linear-gradient(135deg, #1b706f 0%, #15605f 100%)',
+                color: 'white',
+                fontWeight: '600',
+                letterSpacing: '0.5px',
+                textTransform: 'none',
+                fontSize: '15px'
+              }"
+              @click="closePaymentStatusDialog"
+            >
+              {{ $t("BUTTONS.ok") }}
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- End:: Payment Status Dialog -->
+
   </div>
 </template>
 
@@ -314,11 +384,15 @@ export default {
       // Start:: Loader Control Data
       isWaitingRequest: false,
       payment_loading: false,
+      payment_loading_url: false,
       // End:: Loader Control Data
       // Start:: Dialog Control
       showPaymentDialog: false,
       imagePreviewDialog: false,
       previewImageUrl: null,
+      showPaymentStatusDialog: false,
+      isPaymentSuccess: false,
+      paymentStatusTimeout: null,
       // End:: Dialog Control
       // Start:: Payment Data
       paymentAmount: 0,
@@ -448,7 +522,7 @@ export default {
           rtl: this.$t("iziToastConfigs.dir"),
         });
         this.showPaymentDialog = false;
-        this.$router.push(`/live-chat/chat/${this.data.chat_id}`);
+        this.$router.push(`/live-chat/chat/${res.data.data?.chat?.id}`);
         this.fetchMyPoints();
         this.payment_loading = false;
       } catch (error) {
@@ -464,6 +538,37 @@ export default {
       }
     },
     // End:: Open Chat By Points
+
+    // Start:: Open Chat Payment
+    async open_chat_payment() {
+      this.payment_loading_url = true;
+      try {
+        const res = await this.$axios({
+          method: "POST",
+          url: "chat/chats/open_chat_payment",
+          data: {
+            order_id: this.$route.params?.id,
+          },
+        });
+        const paymentUrl = res.data?.data?.payment_url?.invoiceURL || res.data?.payment_url?.invoiceURL;
+        if (paymentUrl) {
+          window.location.href = paymentUrl;
+        } else {
+          throw new Error("No payment URL received from server");
+        }
+        this.showPaymentDialog = false;
+      } catch (error) {
+        this.$iziToast.error({
+          timeout: 2000,
+          message: error.response?.data?.message || this.$t("MESSAGES.error"),
+          messageSize: "16",
+          position: this.$t("iziToastConfigs.position"),
+          rtl: this.$t("iziToastConfigs.dir"),
+        });
+        this.payment_loading_url = false;
+      }
+    },
+    // End:: Open Chat Payment
 
     // Start:: View Profile (Navigate to Payment)
     viewProfile() {
@@ -497,13 +602,57 @@ export default {
       this.imagePreviewDialog = true;
     },
     // End:: Open Image Preview
+
+    // Start:: Check Payment Status
+    checkPaymentStatus() {
+      const successParam = this.$route.query.success;
+      if (successParam !== undefined) {
+        this.isPaymentSuccess = successParam === "true" || successParam === true;
+        
+        // Remove the success query parameter from URL immediately
+        const query = { ...this.$route.query };
+        delete query.success;
+        this.$router.replace({ query });
+        
+        // Show the dialog
+        this.showPaymentStatusDialog = true;
+        
+        // Auto-close after 3 seconds
+        if (this.paymentStatusTimeout) {
+          clearTimeout(this.paymentStatusTimeout);
+        }
+        this.paymentStatusTimeout = setTimeout(() => {
+          this.closePaymentStatusDialog();
+        }, 3000);
+      }
+    },
+    // End:: Check Payment Status
+
+    // Start:: Close Payment Status Dialog
+    closePaymentStatusDialog() {
+      this.showPaymentStatusDialog = false;
+      // Clear the timeout if it exists
+      if (this.paymentStatusTimeout) {
+        clearTimeout(this.paymentStatusTimeout);
+        this.paymentStatusTimeout = null;
+      }
+    },
+    // End:: Close Payment Status Dialog
   },
   created() {
     // Start:: Fire Methods
     this.fetchOrderDetails();
     this.fetchPaymentAmount();
     this.fetchMyPoints();
+    this.checkPaymentStatus();
     // End:: Fire Methods
+  },
+  beforeDestroy() {
+    // Clean up payment status timeout
+    if (this.paymentStatusTimeout) {
+      clearTimeout(this.paymentStatusTimeout);
+      this.paymentStatusTimeout = null;
+    }
   },
 };
 </script>
