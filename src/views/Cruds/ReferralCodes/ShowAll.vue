@@ -402,7 +402,7 @@ export default {
         this.paginations.last_page = res.data.data?.meta?.last_page;
         this.paginations.items_per_page = res.data.data?.meta?.per_page;
         this.referralCodeData = {
-          code: res.data.data?.referralProviderCodes[0]?.provider?.code,
+          code: res.data.data?.code,
           total_points: res.data?.data?.total_points || 0,
           total_referrals: res.data.data?.meta?.total || 0,
         };
