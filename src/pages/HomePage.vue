@@ -11,43 +11,51 @@
       <!--  =========== End:: Table Title =========== -->
 
       <!--  =========== Start:: Data Table =========== -->
-      <div class="statics mt-4" v-if="statics && statics?.length">
+      <div class="statics mt-4" v-if="statics && Object.keys(statics).length">
         <div class="row">
           <div
             class="col-lg-6 col-md-6 col-12"
             v-for="(value, key) in statics"
-            :key="'i' + key"
+            :key="key"
           >
             <div class="box">
               <div class="icon">
+                <!-- أيقونات حسب اسم الحقل -->
+                <i v-if="key === 'points'" class="fas fa-coins"></i>
                 <i
-                  v-if="key === 'website_clients'"
-                  class="fas fa-users"
+                  v-else-if="key === 'orders_count'"
+                  class="fas fa-shopping-cart"
                 ></i>
-
+                <i v-else-if="key === 'offers_count'" class="fas fa-tags"></i>
                 <i
-                  v-else-if="key === 'website_influencers'"
-                  class="fas fa-users"
+                  v-else-if="key === 'chats_count'"
+                  class="fas fa-comments"
                 ></i>
-
               </div>
 
               <div class="info_box">
-                <span v-if="key === 'website_clients'">{{
-                  $t("PLACEHOLDERS.website_clients")
+                <span v-if="key === 'points'">{{
+                  $t("PLACEHOLDERS.points")
+                }}</span>
+                <span v-else-if="key === 'orders_count'">{{
+                  $t("PLACEHOLDERS.orders_count")
+                }}</span>
+                <span v-else-if="key === 'offers_count'">{{
+                  $t("PLACEHOLDERS.offers_count")
+                }}</span>
+                <span v-else-if="key === 'chats_count'">{{
+                  $t("PLACEHOLDERS.chats_count")
                 }}</span>
 
-                <span v-else-if="key === 'website_influencers'">{{
-                  $t("PLACEHOLDERS.website_influencers")
-                }}</span>
                 <p class="number_box">{{ value }}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <!--  =========== End:: Data Table =========== -->
-      <coming-soon v-else/>
+      <!-- <coming-soon v-else /> -->
     </main>
     <!-- End:: Main Section -->
   </div>
@@ -74,22 +82,23 @@ export default {
       try {
         let res = await this.$axios({
           method: "GET",
-          url: "statistic",
+          url: "statistics",
         });
 
         this.statics = {
-          website_clients: res.data.data.website_clients,
-          website_influencers: res.data.data.website_influencers,
+          points: res.data.data.points,
+          orders_count: res.data.data.orders_count,
+          offers_count: res.data.data.offers_count,
+          chats_count: res.data.data.chats_count,
         };
       } catch (error) {
-        this.loading = false;
-        console.log(error.response.data.message);
+        console.log(error.response?.data?.message);
       }
     },
   },
 
   mounted() {
-    // this.getStatics(); 
+    this.getStatics();
   },
 };
 </script>
@@ -161,7 +170,7 @@ export default {
     }
   }
 }
-.show_all_content_wrapper .statics .box .info_box{
+.show_all_content_wrapper .statics .box .info_box {
   align-items: flex-start !important;
   width: 100% !important;
   padding-inline-start: 5% !important;

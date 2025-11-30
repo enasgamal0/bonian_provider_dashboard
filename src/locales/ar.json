@@ -25,8 +25,8 @@
     "productsAndServices": "المنتجات والخدمات",
     "productOrServiceName": "اسم المنتج أو الخدمة",
     "quantity": "الكمية",
-    "unitPrice": "سعر الوحدة",
-    "totalPrice": "السعر الكلي",
+    "unitPrice": "سعر الوحدة (بالريال)",
+    "totalPrice": "السعر الكلي (بالريال)",
     "actions": "الإجراءات",
     "expectedDurationDays": "مدة التنفيذ المتوقعة (بالأيام)",
     "totalOfferPriceSAR": "السعر الكلي للعرض (بالريال)",
@@ -1024,6 +1024,7 @@
   },
 
   "TITLES": {
+    "editProvider": "تعديل بروفايل الشركة",
     "showProvider": "عرض بيانات مقدم الخدمة",
     "addRecommendation": "إضافة توصية جديدة",
     "editRecommendation": "تعديل بيانات توصية",
@@ -1294,6 +1295,10 @@
   },
 
   "PLACEHOLDERS": {
+    "points": "إجمالي النقاط التي حصلت عليها من كود الإحالة",
+    "orders_count": "إجمالي عدد الطلبات المتلقاة",
+    "offers_count": "إجمالي عدد عروض الأسعار المرسلة",
+    "chats_count": "إجمالي عدد المحادثات المفتوحة",
     "file": "⚠️ تم إرسال ملف",
     "last_message": "آخر رسالة",
     "data_last_message": "تاريخ آخر رسالة",
@@ -1322,7 +1327,7 @@
     "quantity": "أدخل الكمية",
     "unitPrice": "أدخل سعر الوحدة",
     "expectedDuration": "أدخل مدة التنفيذ بالأيام",
-    "totalOfferPrice": "أدخل السعر الكلي للعرض",
+    "totalOfferPrice": "أدخل السعر الكلي للعرض (بالريال)",
     "orderDetails": "تفاصيل الطلب",
     "serialNumber": "رقم الطلب",
     "executionDate": "تاريخ التنفيذ",

@@ -9,11 +9,11 @@ export default {
     // START:: SEND GET REQUEST
     axios({
       method: "GET",
-      url: `notification/notifications-count`,
+      url: `notification/count-notification`,
     })
       .then((res) => {
         context.commit("setNotifications", {
-          unreadNotificationsCount: res?.data?.data?.count,
+          unreadNotificationsCount: res?.data?.count,
           // notifications: res.data.notifications.data,
         });
       })
@@ -47,11 +47,11 @@ export default {
     // START:: SEND GET REQUEST
     axios({
       method: "GET",
-      url: `notification/notifications-count`,
+      url: `notification/count-notification`,
     })
       .then((res) => {
         context.commit("setAllReadiedNotifications", {
-          unreadNotificationsCount: res?.data?.data?.count,
+          unreadNotificationsCount: res?.data?.count,
           // notifications: res.data.notifications.data,
         });
       })

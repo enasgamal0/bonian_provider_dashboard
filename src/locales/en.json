@@ -25,8 +25,8 @@
     "productsAndServices": "Products and Services",
     "productOrServiceName": "Product or Service Name",
     "quantity": "Quantity",
-    "unitPrice": "Unit Price",
-    "totalPrice": "Total Price",
+    "unitPrice": "Unit Price (SAR)",
+    "totalPrice": "Total Price (SAR)",
     "actions": "Actions",
     "expectedDurationDays": "Expected Duration (Days)",
     "totalOfferPriceSAR": "Total Offer Price (SAR)",
@@ -881,7 +881,7 @@
       "orderType": "Order Type",
       "service": "Service",
       "driverName": "Driver Name",
-      "totalPrice": "Total Price",
+      "totalPrice": "Total Price (SAR)",
       "orderDate": "Order Date",
       "orderStatus": "Order Status",
       "actions": "Actions"
@@ -1024,6 +1024,7 @@
   },
 
   "TITLES": {
+    "editProvider": "Edit Company Profile",
     "showProvider": "Show Provider Data",
     "addRecommendation": "Add a New Recommendation",
     "editRecommendation": "Edit Recommendation Data",
@@ -1294,6 +1295,10 @@
   },
 
   "PLACEHOLDERS": {
+    "points": "Total points received from referral codes",
+    "orders_count": "Total orders received",
+    "offers_count": "Total offers sent",
+    "chats_count": "Total open chats",
     "file": "⚠️ A File has been sent",
     "last_message": "Last Message",
     "data_last_message": "Last Message Date",
@@ -1320,9 +1325,9 @@
     "type_message": "Enter message",
     "productOrServiceName": "Enter product or service name",
     "quantity": "Enter quantity",
-    "unitPrice": "Enter unit price",
+    "unitPrice": "Enter unit price (SAR)",
     "expectedDuration": "Enter duration in days",
-    "totalOfferPrice": "Enter total offer price",
+    "totalOfferPrice": "Enter total offer price (SAR)",
     "orderDetails": "Order Details",
     "serialNumber": "Order Number",
     "executionDate": "Execution Date",

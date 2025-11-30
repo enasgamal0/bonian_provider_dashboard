@@ -18,9 +18,11 @@
             class="group"
             :class="notificationsData.unreadNotifications > 0 ? '' : 'none'"
           >
-          
             <!-- ********** Start:: Notification Button ********** -->
-            <v-tooltip bottom v-if="$can('notifications index', 'notifications')"> 
+            <v-tooltip
+              bottom
+            >
+              <!-- v-if="$can('notifications index', 'notifications')" -->
               <template v-slot:activator="{ on, attrs }">
                 <button v-bind="attrs" v-on="on">
                   <v-badge
@@ -109,23 +111,30 @@
 
             <!-- ********** Start:: User Profile Button -->
             <div class="user_profile_menu_wrapper">
-              <button
+              <router-link
                 class="user_profile_menu_btn"
-                @click="userProfileModalIsOpen = true"
+                :to="`/providers/edit/${getAuthenticatedUserData.id}`"
+                :style="{ cursor: getAuthenticatedUserData.type === 'teacher' ? 'default' : 'pointer' }"
               >
                 <div class="name_wrapper">
                   <h3>{{ getAuthenticatedUserData.name }}</h3>
                 </div>
 
-                <div class="avatar_wrapper" v-if="getAuthenticatedUserData.avatar">
-                  <img :alt="getAuthenticatedUserData.name" :src="getAuthenticatedUserData.avatar"/>
+                <div
+                  class="avatar_wrapper"
+                  v-if="getAuthenticatedUserData.avatar"
+                >
+                  <img
+                    :alt="getAuthenticatedUserData.name"
+                    :src="getAuthenticatedUserData.avatar"
+                  />
                 </div>
                 <div class="avatar_wrapper" v-else>
                   <AvatarPlaceholder
                     :nameAvatar="getAuthenticatedUserData.name"
                   />
                 </div>
-              </button>
+              </router-link>
             </div>
 
             <UserDataModal
@@ -236,7 +245,7 @@ export default {
     this.readAllNotifications();
 
     navigator.serviceWorker.addEventListener("message", (event) => {
-      this.notificationCount++;
+      this.notificationsData.unreadNotifications++;
     });
 
     // Start:: Fire Methods

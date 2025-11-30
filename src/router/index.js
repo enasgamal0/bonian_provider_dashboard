@@ -2704,30 +2704,30 @@ const routes = [
           middleware: [auth],
         },
         children: [
-          {
-            path: "all",
-            name: "AllProviders",
-            component: AllProviders,
-            meta: {
-              middleware: [auth],
-              requiresPermission: {
-                action: "providers index",
-                subject: "providers",
-              },
-            },
-          },
-          {
-            path: "create",
-            name: "CreateProviders",
-            component: CreateProviders,
-            meta: {
-              middleware: [auth],
-              requiresPermission: {
-                action: "providers create",
-                subject: "providers",
-              },
-            },
-          },
+          // {
+          //   path: "all",
+          //   name: "AllProviders",
+          //   component: AllProviders,
+          //   meta: {
+          //     middleware: [auth],
+          //     requiresPermission: {
+          //       action: "providers index",
+          //       subject: "providers",
+          //     },
+          //   },
+          // },
+          // {
+          //   path: "create",
+          //   name: "CreateProviders",
+          //   component: CreateProviders,
+          //   meta: {
+          //     middleware: [auth],
+          //     requiresPermission: {
+          //       action: "providers create",
+          //       subject: "providers",
+          //     },
+          //   },
+          // },
           {
             path: "edit/:id",
             name: "EditProviders",
@@ -2735,25 +2735,21 @@ const routes = [
             props: true,
             meta: {
               middleware: [auth],
-              requiresPermission: {
-                action: "providers edit",
-                subject: "providers",
-              },
             },
           },
-          {
-            path: "show/:id",
-            name: "ShowProviders",
-            component: ShowProviders,
-            props: true,
-            meta: {
-              middleware: [auth],
-              requiresPermission: {
-                action: "providers show",
-                subject: "providers",
-              },
-            },
-          },
+          // {
+          //   path: "show/:id",
+          //   name: "ShowProviders",
+          //   component: ShowProviders,
+          //   props: true,
+          //   meta: {
+          //     middleware: [auth],
+          //     requiresPermission: {
+          //       action: "providers show",
+          //       subject: "providers",
+          //     },
+          //   },
+          // },
         ],
       },
       // End:: Providers Routes Config
