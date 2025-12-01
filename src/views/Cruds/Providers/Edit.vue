@@ -17,13 +17,35 @@
         <div class="row">
           <!-- Start:: Image Upload Input -->
           <base-image-upload-input
-            col="12"
+            col="6"
             identifier="provider_image"
             :placeholder="$t('PLACEHOLDERS.personalImage')"
             @selectImage="selectImage"
             :preSelectedImage="data.image.path"
           />
           <!-- End:: Image Upload Input -->
+
+          <!-- Start:: Commercial Image Upload Input -->
+          <base-image-upload-input
+            col="6"
+            identifier="commercial_image"
+            :placeholder="$t('PLACEHOLDERS.commercial_register_img')"
+            @selectImage="selectCommercialImage"
+            :preSelectedImage="data.commercial_image.path"
+          />
+          <!-- End:: Commercial Image Upload Input -->
+
+          <!-- Start:: Previous Works Upload Input -->
+          <div class="col-12 my-5">
+            <base-multi-image-upload-input
+              :urls="data.previous_works.urls"
+              @onFileSelect="selectPreviousWorks"
+              @onFileRemove="removePreviousWork"
+            >
+              {{ $t('PLACEHOLDERS.prev_imgs') }}
+            </base-multi-image-upload-input>
+          </div>
+          <!-- End:: Previous Works Upload Input -->
 
           <!-- Start:: Name Input -->
           <base-input
@@ -72,6 +94,7 @@
             type="text"
             :placeholder="$t('PLACEHOLDERS.referral_code')"
             v-model.trim="data.referral_code"
+            disabled
           />
           <!-- End:: Referral Code Input -->
 
@@ -81,17 +104,17 @@
             type="text"
             :placeholder="$t('PLACEHOLDERS.commercial_register')"
             v-model.trim="data.commercial_registration_number"
-            required
           />
           <!-- End:: Commercial Registration Input -->
 
-          <!-- Start:: Category Select -->
+          <!-- Start:: Category Select (Multiple) -->
           <base-select-input
             col="6"
             :optionsList="categories"
             :placeholder="$t('PLACEHOLDERS.category')"
-            v-model="data.category"
-            @input="onCategoryChange"
+            v-model="data.categories"
+            @input="onCategoriesChange"
+            :multiple="true"
             required
           />
           <!-- End:: Category Select -->
@@ -123,7 +146,6 @@
             :optionsList="districts"
             :placeholder="$t('PLACEHOLDERS.district')"
             v-model="data.district"
-            required
           />
           <!-- End:: District Select -->
 
@@ -140,7 +162,7 @@
           <div class="input_wrapper switch_wrapper my-5">
             <v-switch
               color="green"
-              :label="$t('PLACEHOLDERS.referral_code')"
+              :label="$t('PLACEHOLDERS.status')"
               v-model="data.is_active"
               hide-details
             ></v-switch>
@@ -168,11 +190,13 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import BasePhoneInput from "@/components/formInputs/BasePhoneInput.vue";
+import BaseMultiImageUploadInput from "@/components/formInputs/BaseMultiImageUploadInput.vue";
 
 export default {
   name: "EditProvider",
   components: {
     BasePhoneInput,
+    BaseMultiImageUploadInput,
   },
   data() {
     return {
@@ -186,13 +210,22 @@ export default {
           path: null,
           file: null,
         },
+        commercial_image: {
+          path: null,
+          file: null,
+        },
+        previous_works: {
+          urls: [],
+          files: [],
+          removedIndices: [],
+        },
         name: null,
         email: null,
         mobile: null,
         referral_code: null,
         description: null,
         commercial_registration_number: null,
-        category: null,
+        categories: [],
         sub_categories: [],
         city: null,
         district: null,
@@ -284,12 +317,44 @@ export default {
         this.data.is_active = provider.is_active;
         this.data.image.path = provider.image;
         
-        // Set category and load subcategories
-        this.data.category = provider.category_id;
-        if (provider.category_id) {
-          await this.getSubCategories(provider.category_id);
+        // Set commercial image
+        if (provider.commercia_iImage || provider.commercial_image) {
+          this.data.commercial_image.path = provider.commercia_iImage || provider.commercial_image;
         }
-        this.data.sub_categories = provider.sub_category_ids || [];
+        
+        // Set previous works
+        if (provider.previous_works && Array.isArray(provider.previous_works)) {
+          this.data.previous_works.urls = provider.previous_works.map(pw => pw.previous_work || pw).filter(Boolean);
+        }
+        
+        // Set categories (multiple) and load subcategories
+        // Handle both single category_id and multiple category_ids from API
+        if (provider.category_ids && Array.isArray(provider.category_ids)) {
+          // If API returns array of category IDs, find the category objects
+          this.data.categories = provider.category_ids.map(catId => {
+            return this.categories.find(cat => cat.id === catId) || { id: catId };
+          }).filter(Boolean);
+        } else if (provider.category_id) {
+          // Fallback for single category
+          const category = this.categories.find(cat => cat.id === provider.category_id);
+          this.data.categories = category ? [category] : [{ id: provider.category_id }];
+        } else if (provider.categories && Array.isArray(provider.categories)) {
+          // If API returns category objects directly
+          this.data.categories = provider.categories;
+        }
+        
+        // Load all subcategories initially
+        await this.getSubCategories();
+        
+        // Set sub categories
+        if (provider.sub_category_ids && Array.isArray(provider.sub_category_ids)) {
+          // Find subcategory objects from the loaded list
+          this.data.sub_categories = provider.sub_category_ids.map(subCatId => {
+            return this.subCategories.find(subCat => subCat.id === subCatId);
+          }).filter(Boolean);
+        } else {
+          this.data.sub_categories = provider.sub_category_ids || [];
+        }
         
         // Set city and load districts
         this.data.city = provider.city_id;
@@ -310,10 +375,32 @@ export default {
     // End:: Show Provider Data
 
     // Start:: Event Handlers
-    onCategoryChange(selectedCategory) {
-      this.data.sub_categories = [];
-      if (selectedCategory?.id) {
-        this.getSubCategories(selectedCategory.id);
+    onCategoriesChange(selectedCategories) {
+      // When categories change, update subcategories based on all selected categories
+      if (!selectedCategories || selectedCategories.length === 0) {
+        this.data.sub_categories = [];
+        this.getSubCategories();
+        return;
+      }
+      
+      // Get all category IDs
+      const categoryIds = selectedCategories.map(cat => cat.id || cat).filter(Boolean);
+      
+      // Load subcategories for all selected categories
+      // If multiple categories, we might need to load all subcategories or filter by category
+      // For now, we'll load subcategories without category filter when multiple are selected
+      if (categoryIds.length > 0) {
+        // Load subcategories - the API might need to handle multiple category IDs
+        // For now, we'll load all active subcategories and let the backend filter
+        this.getSubCategories();
+        
+        // Filter existing sub_categories to only keep those belonging to selected categories
+        if (Array.isArray(this.data.sub_categories) && this.data.sub_categories.length > 0) {
+          this.data.sub_categories = this.data.sub_categories.filter(subCat => {
+            const subCatCategoryId = subCat.category_id || subCat?.category?.id;
+            return categoryIds.includes(subCatCategoryId);
+          });
+        }
       }
     },
 
@@ -329,6 +416,24 @@ export default {
       this.data.image = selectedImage;
     },
     // End:: Select Upload Image
+
+    // Start:: Select Commercial Image
+    selectCommercialImage(selectedImage) {
+      this.data.commercial_image = selectedImage;
+    },
+    // End:: Select Commercial Image
+
+    // Start:: Select Previous Works
+    selectPreviousWorks(files) {
+      this.data.previous_works.files = files;
+    },
+    // End:: Select Previous Works
+
+    // Start:: Remove Previous Work
+    removePreviousWork(index) {
+      this.data.previous_works.removedIndices.push(index);
+    },
+    // End:: Remove Previous Work
 
     dialCode(dialCode) {
       this.data.dial_code = dialCode;
@@ -354,6 +459,18 @@ export default {
         REQUEST_DATA.append("avatar", this.data.image.file);
       }
       
+      // Append commercial image if selected
+      if (this.data.commercial_image.file) {
+        REQUEST_DATA.append("commercial_image", this.data.commercial_image.file);
+      }
+      
+      // Append previous works files if selected
+      if (Array.isArray(this.data.previous_works.files) && this.data.previous_works.files.length > 0) {
+        this.data.previous_works.files.forEach((file, index) => {
+          REQUEST_DATA.append(`previous_works[${index}]`, file);
+        });
+      }
+      
       // Append basic fields
       if (this.data.name) {
         REQUEST_DATA.append("name", this.data.name);
@@ -373,9 +490,15 @@ export default {
       if (this.data.commercial_registration_number) {
         REQUEST_DATA.append("commercial_registration_number", this.data.commercial_registration_number);
       }
-      if (this.data.category?.id) {
-        REQUEST_DATA.append("category_id", this.data.category.id);
+      
+      // Append categories array (multiple)
+      if (Array.isArray(this.data.categories) && this.data.categories.length > 0) {
+        this.data.categories.forEach((category, index) => {
+          const categoryId = category.id || category;
+          REQUEST_DATA.append(`category_ids[${index}]`, categoryId);
+        });
       }
+      
       if (this.data.city?.id) {
         REQUEST_DATA.append("city_id", this.data.city.id);
       }
@@ -421,7 +544,9 @@ export default {
 
   async created() {
     // Start:: Fire Methods
+    // Load categories first so they're available when loading provider data
     await this.getCategories();
+    await this.getSubCategories(); // Load all subcategories initially
     await this.getCities();
     await this.showProvider();
     // End:: Fire Methods
