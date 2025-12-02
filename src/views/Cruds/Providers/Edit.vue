@@ -42,7 +42,7 @@
               @onFileSelect="selectPreviousWorks"
               @onFileRemove="removePreviousWork"
             >
-              {{ $t('PLACEHOLDERS.prev_imgs') }}
+              {{ $t("PLACEHOLDERS.prev_imgs") }}
             </base-multi-image-upload-input>
           </div>
           <!-- End:: Previous Works Upload Input -->
@@ -107,27 +107,72 @@
           />
           <!-- End:: Commercial Registration Input -->
 
-          <!-- Start:: Category Select (Multiple) -->
-          <base-select-input
-            col="6"
-            :optionsList="categories"
-            :placeholder="$t('PLACEHOLDERS.category')"
-            v-model="data.categories"
-            @input="onCategoriesChange"
-            :multiple="true"
-            required
-          />
-          <!-- End:: Category Select -->
+          <!-- Start:: Category Rows -->
+          <div class="col-12 my-5">
+            <div class="category-rows-wrapper">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 style="color: #1b706f; margin: 0;">
+                  {{ $t('PLACEHOLDERS.categories') || 'Categories' }}
+                </h5>
+                <v-btn
+                  @click="addCategoryRow"
+                  color="#1b706f"
+                  small
+                  outlined
+                >
+                  <i class="fas fa-plus mr-2"></i>
+                  {{ $t('BUTTONS.add') || 'Add' }}
+                </v-btn>
+              </div>
 
-          <!-- Start:: Sub Categories Multi Select -->
-          <base-multi-select-input
-            col="6"
-            :optionsList="subCategories"
-            :placeholder="$t('PLACEHOLDERS.subCategories')"
-            v-model="data.sub_categories"
-            required
-          />
-          <!-- End:: Sub Categories Multi Select -->
+              <div
+                v-for="(row, index) in data.categoryRows"
+                :key="index"
+                class="category-row mb-4"
+              >
+                <div class="row align-items-center">
+                  <!-- Category Select -->
+                  <div class="col-lg-5 col-md-5 col-12">
+                    <base-select-input
+                      :key="`cat-${index}`"
+                      :optionsList="getAvailableCategories(index)"
+                      :placeholder="$t('PLACEHOLDERS.category')"
+                      v-model="row.category"
+                      @input="onCategoryRowChange(index, $event)"
+                      required
+                    />
+                  </div>
+
+                  <!-- Sub Categories Multi Select -->
+                  <div class="col-lg-6 col-md-6 col-12">
+                    <base-select-input
+                      :key="`subcat-${index}-${row.category ? (row.category.id || row.category) : 'none'}`"
+                      :optionsList="getSubCategoriesForRow(index)"
+                      :placeholder="$t('PLACEHOLDERS.subCategories')"
+                      v-model="row.sub_categories"
+                      :multiple="true"
+                      :disabled="!row.category"
+                      required
+                    />
+                  </div>
+
+                  <!-- Delete Button -->
+                  <div class="col-lg-1 col-md-1 col-12 text-center">
+                    <v-btn
+                      @click="removeCategoryRow(index)"
+                      color="error"
+                      icon
+                      small
+                      :disabled="data.categoryRows.length == 1"
+                    >
+                      <i class="fas fa-trash" style="font-size: 20px;"></i>
+                    </v-btn>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End:: Category Rows -->
 
           <!-- Start:: City Select -->
           <base-select-input
@@ -146,6 +191,7 @@
             :optionsList="districts"
             :placeholder="$t('PLACEHOLDERS.district')"
             v-model="data.district"
+            :disabled="!data.city"
           />
           <!-- End:: District Select -->
 
@@ -159,14 +205,14 @@
           <!-- End:: Description Textarea -->
 
           <!-- Start:: Active Switch -->
-          <div class="input_wrapper switch_wrapper my-5">
+          <!-- <div class="input_wrapper switch_wrapper my-5">
             <v-switch
               color="green"
               :label="$t('PLACEHOLDERS.status')"
               v-model="data.is_active"
               hide-details
             ></v-switch>
-          </div>
+          </div> -->
           <!-- End:: Active Switch -->
 
           <!-- Start:: Submit Button Wrapper -->
@@ -225,8 +271,12 @@ export default {
         referral_code: null,
         description: null,
         commercial_registration_number: null,
-        categories: [],
-        sub_categories: [],
+        categoryRows: [
+          {
+            category: null,
+            sub_categories: [],
+          },
+        ],
         city: null,
         district: null,
         is_active: true,
@@ -247,7 +297,7 @@ export default {
       try {
         let res = await this.$axios({
           method: "GET",
-          url: `/categories?page=0&limit=0&is_active=1&ignorePermissionCheck=1`,
+          url: `https://backend.bonian.moltaqadev.com/dashboard-api/v1/categories?page=0&limit=0&is_active=1&ignorePermissionCheck=1`,
         });
         this.categories = res.data.data.data;
       } catch (error) {
@@ -257,10 +307,10 @@ export default {
 
     async getSubCategories(categoryId = null) {
       try {
-        const url = categoryId 
-          ? `/sub-categories?category_id=${categoryId}&page=0&limit=0&is_active=1&ignorePermissionCheck=1`
-          : `/sub-categories?page=0&limit=0&is_active=1&ignorePermissionCheck=1`;
-        
+        const url = categoryId
+          ? `https://backend.bonian.moltaqadev.com/dashboard-api/v1/sub-categories?category_id=${categoryId}&page=0&limit=0&is_active=1&ignorePermissionCheck=1`
+          : `https://backend.bonian.moltaqadev.com/dashboard-api/v1/sub-categories?page=0&limit=0&is_active=1&ignorePermissionCheck=1`;
+
         let res = await this.$axios({
           method: "GET",
           url: url,
@@ -275,7 +325,7 @@ export default {
       try {
         let res = await this.$axios({
           method: "GET",
-          url: "/cities?page=0&limit=0&is_active=1&ignorePermissionCheck=1",
+          url: "https://backend.bonian.moltaqadev.com/dashboard-api/v1/cities?page=0&limit=0&is_active=1&ignorePermissionCheck=1",
         });
         this.cities = res.data.data.data;
       } catch (error) {
@@ -285,10 +335,10 @@ export default {
 
     async getDistricts(cityId = null) {
       try {
-        const url = cityId 
-          ? `/districts?city_id=${cityId}&page=0&limit=0&is_active=1&ignorePermissionCheck=1`
-          : `/districts?page=0&limit=0&is_active=1&ignorePermissionCheck=1`;
-        
+        const url = cityId
+          ? `https://backend.bonian.moltaqadev.com/dashboard-api/v1/districts?city_id=${cityId}&page=0&limit=0&is_active=1&ignorePermissionCheck=1`
+          : `https://backend.bonian.moltaqadev.com/dashboard-api/v1/districts?page=0&limit=0&is_active=1&ignorePermissionCheck=1`;
+
         let res = await this.$axios({
           method: "GET",
           url: url,
@@ -304,70 +354,117 @@ export default {
       try {
         let res = await this.$axios({
           method: "GET",
-          url: `providers/${this.$route.params?.id}`,
+          url: `auth/profile`,
         });
-        
-        const provider = res.data.data.Provider;
+
+        const provider = res.data.data.user;
         this.data.name = provider.name;
         this.data.email = provider.email;
         this.data.mobile = provider.mobile;
-        this.data.referral_code = provider.referral_code;
+        this.data.referral_code = provider.code;
         this.data.description = provider.description;
-        this.data.commercial_registration_number = provider.commercial_registration_number;
+        this.data.commercial_registration_number =
+          provider.commercial_registration_number;
         this.data.is_active = provider.is_active;
-        this.data.image.path = provider.image;
         
-        // Set commercial image
-        if (provider.commercia_iImage || provider.commercial_image) {
-          this.data.commercial_image.path = provider.commercia_iImage || provider.commercial_image;
+        // Set avatar image (API returns 'avatar' field)
+        if (provider.avatar) {
+          this.data.image.path = provider.avatar;
+        } else if (provider.image) {
+          this.data.image.path = provider.image;
         }
-        
+
+        // Set commercial image
+        if (provider.commercial_image) {
+          this.data.commercial_image.path = provider.commercial_image;
+        }
+
         // Set previous works
         if (provider.previous_works && Array.isArray(provider.previous_works)) {
-          this.data.previous_works.urls = provider.previous_works.map(pw => pw.previous_work || pw).filter(Boolean);
+          this.data.previous_works.urls = provider.previous_works
+            .map((pw) => {
+              if (typeof pw === 'string') return pw;
+              return pw.previous_work || pw.url || pw;
+            })
+            .filter(Boolean);
         }
-        
-        // Set categories (multiple) and load subcategories
-        // Handle both single category_id and multiple category_ids from API
-        if (provider.category_ids && Array.isArray(provider.category_ids)) {
-          // If API returns array of category IDs, find the category objects
-          this.data.categories = provider.category_ids.map(catId => {
-            return this.categories.find(cat => cat.id === catId) || { id: catId };
-          }).filter(Boolean);
-        } else if (provider.category_id) {
-          // Fallback for single category
-          const category = this.categories.find(cat => cat.id === provider.category_id);
-          this.data.categories = category ? [category] : [{ id: provider.category_id }];
-        } else if (provider.categories && Array.isArray(provider.categories)) {
-          // If API returns category objects directly
-          this.data.categories = provider.categories;
-        }
-        
+
+        // Initialize category rows
+        this.data.categoryRows = [];
+
         // Load all subcategories initially
         await this.getSubCategories();
-        
-        // Set sub categories
-        if (provider.sub_category_ids && Array.isArray(provider.sub_category_ids)) {
-          // Find subcategory objects from the loaded list
-          this.data.sub_categories = provider.sub_category_ids.map(subCatId => {
-            return this.subCategories.find(subCat => subCat.id === subCatId);
-          }).filter(Boolean);
-        } else {
-          this.data.sub_categories = provider.sub_category_ids || [];
+
+        // Handle category and subcategory data from API
+        // API returns providerCategories and providerSubCategories arrays
+        const providerCategories = provider.providerCategories || [];
+        const providerSubCategories = provider.providerSubCategories || [];
+
+        // Group subcategories by category_id
+        const subCategoriesByCategory = {};
+        providerSubCategories.forEach((subCat) => {
+          const catId = subCat.category_id;
+          if (!subCategoriesByCategory[catId]) {
+            subCategoriesByCategory[catId] = [];
+          }
+          subCategoriesByCategory[catId].push(subCat);
+        });
+
+        // Create rows for each category
+        if (providerCategories.length > 0) {
+          providerCategories.forEach((providerCat) => {
+            const category = this.categories.find((cat) => cat.id === providerCat.id);
+            if (category) {
+              // Get subcategories for this category from providerSubCategories
+              const rowSubCategories = subCategoriesByCategory[providerCat.id] || [];
+              
+              // Map to full subcategory objects from this.subCategories
+              const mappedSubCategories = rowSubCategories
+                .map((providerSubCat) => {
+                  return this.subCategories.find(
+                    (subCat) => subCat.id === providerSubCat.id
+                  );
+                })
+                .filter(Boolean);
+
+              this.data.categoryRows.push({
+                category: category,
+                sub_categories: mappedSubCategories,
+              });
+            }
+          });
         }
-        
+
+        // If no categories found, ensure at least one empty row
+        if (this.data.categoryRows.length === 0) {
+          this.data.categoryRows = [
+            {
+              category: null,
+              sub_categories: [],
+            },
+          ];
+        }
+
         // Set city and load districts
-        this.data.city = provider.city_id;
+        // Find city object from cities array
         if (provider.city_id) {
+          const cityObj = this.cities.find((city) => city.id === provider.city_id);
+          this.data.city = cityObj || provider.city_id;
           await this.getDistricts(provider.city_id);
         }
-        this.data.district = provider.district_id;
         
+        // Find district object from districts array
+        if (provider.district_id) {
+          const districtObj = this.districts.find(
+            (district) => district.id === provider.district_id
+          );
+          this.data.district = districtObj || provider.district_id;
+        }
+
         // Set phone related data
         this.data.dial_code = provider.country_code;
         this.data.iso_code = provider.iso_code;
         this.key = +provider.country_code || "";
-        
       } catch (error) {
         console.log(error?.response?.data?.message);
       }
@@ -375,33 +472,69 @@ export default {
     // End:: Show Provider Data
 
     // Start:: Event Handlers
-    onCategoriesChange(selectedCategories) {
-      // When categories change, update subcategories based on all selected categories
-      if (!selectedCategories || selectedCategories.length === 0) {
-        this.data.sub_categories = [];
-        this.getSubCategories();
+    addCategoryRow() {
+      this.data.categoryRows.push({
+        category: null,
+        sub_categories: [],
+      });
+    },
+
+    removeCategoryRow(index) {
+      if (this.data.categoryRows.length > 1) {
+        this.data.categoryRows.splice(index, 1);
+      }
+    },
+
+    onCategoryRowChange(rowIndex, selectedCategory) {
+      const row = this.data.categoryRows[rowIndex];
+      if (!selectedCategory) {
+        row.sub_categories = [];
         return;
       }
-      
-      // Get all category IDs
-      const categoryIds = selectedCategories.map(cat => cat.id || cat).filter(Boolean);
-      
-      // Load subcategories for all selected categories
-      // If multiple categories, we might need to load all subcategories or filter by category
-      // For now, we'll load subcategories without category filter when multiple are selected
-      if (categoryIds.length > 0) {
-        // Load subcategories - the API might need to handle multiple category IDs
-        // For now, we'll load all active subcategories and let the backend filter
-        this.getSubCategories();
-        
-        // Filter existing sub_categories to only keep those belonging to selected categories
-        if (Array.isArray(this.data.sub_categories) && this.data.sub_categories.length > 0) {
-          this.data.sub_categories = this.data.sub_categories.filter(subCat => {
-            const subCatCategoryId = subCat.category_id || subCat?.category?.id;
-            return categoryIds.includes(subCatCategoryId);
-          });
-        }
+
+      // Clear sub_categories for this row since category changed
+      // The getSubCategoriesForRow method will filter the correct subcategories
+      // from the already loaded subCategories array
+      this.$set(row, 'sub_categories', []);
+    },
+
+    getAvailableCategories(currentRowIndex) {
+      // Get all selected category IDs except the current row
+      const selectedCategoryIds = this.data.categoryRows
+        .map((row, index) => {
+          if (index === currentRowIndex) return null;
+          if (!row.category) return null;
+          return row.category.id || row.category;
+        })
+        .filter(Boolean);
+
+      // Filter out already selected categories
+      return this.categories.filter((cat) => {
+        const catId = cat.id || cat;
+        return !selectedCategoryIds.includes(catId);
+      });
+    },
+
+    getSubCategoriesForRow(rowIndex) {
+      const row = this.data.categoryRows[rowIndex];
+      if (!row || !row.category) {
+        return [];
       }
+
+      const categoryId = row.category.id || row.category;
+      if (!categoryId) {
+        return [];
+      }
+
+      // Filter subcategories to only show those belonging to the selected category
+      // Check both category_id and nested category.id
+      const filtered = this.subCategories.filter((subCat) => {
+        if (!subCat) return false;
+        const subCatCategoryId = subCat.category_id || subCat?.category?.id || subCat.category_id;
+        return subCatCategoryId == categoryId; // Use == for type coercion
+      });
+
+      return filtered;
     },
 
     onCityChange(selectedCity) {
@@ -453,24 +586,30 @@ export default {
     // Start:: Submit Form
     async submitForm() {
       const REQUEST_DATA = new FormData();
-      
+
       // Append image if selected
       if (this.data.image.file) {
         REQUEST_DATA.append("avatar", this.data.image.file);
       }
-      
+
       // Append commercial image if selected
       if (this.data.commercial_image.file) {
-        REQUEST_DATA.append("commercial_image", this.data.commercial_image.file);
+        REQUEST_DATA.append(
+          "commercial_image",
+          this.data.commercial_image.file
+        );
       }
-      
+
       // Append previous works files if selected
-      if (Array.isArray(this.data.previous_works.files) && this.data.previous_works.files.length > 0) {
+      if (
+        Array.isArray(this.data.previous_works.files) &&
+        this.data.previous_works.files.length > 0
+      ) {
         this.data.previous_works.files.forEach((file, index) => {
           REQUEST_DATA.append(`previous_works[${index}]`, file);
         });
       }
-      
+
       // Append basic fields
       if (this.data.name) {
         REQUEST_DATA.append("name", this.data.name);
@@ -481,29 +620,70 @@ export default {
       if (this.data.mobile) {
         REQUEST_DATA.append("mobile", this.data.mobile);
       }
-      if (this.data.referral_code) {
-        REQUEST_DATA.append("referral_code", this.data.referral_code);
-      }
       if (this.data.description) {
         REQUEST_DATA.append("description", this.data.description);
       }
       if (this.data.commercial_registration_number) {
-        REQUEST_DATA.append("commercial_registration_number", this.data.commercial_registration_number);
+        REQUEST_DATA.append(
+          "commercial_registration_number",
+          this.data.commercial_registration_number
+        );
       }
-      
-      // Append categories array (multiple)
-      if (Array.isArray(this.data.categories) && this.data.categories.length > 0) {
-        this.data.categories.forEach((category, index) => {
-          const categoryId = category.id || category;
-          REQUEST_DATA.append(`category_ids[${index}]`, categoryId);
+
+      // Append categories and sub-categories from rows
+      const allCategoryIds = [];
+      const allSubCategoryIds = [];
+
+      if (
+        Array.isArray(this.data.categoryRows) &&
+        this.data.categoryRows.length > 0
+      ) {
+        this.data.categoryRows.forEach((row) => {
+          if (row.category) {
+            const categoryId = row.category.id || row.category;
+            if (categoryId && !allCategoryIds.includes(categoryId)) {
+              allCategoryIds.push(categoryId);
+            }
+          }
+
+          if (
+            Array.isArray(row.sub_categories) &&
+            row.sub_categories.length > 0
+          ) {
+            row.sub_categories.forEach((subCat) => {
+              const subCatId = subCat.id || subCat;
+              if (subCatId && !allSubCategoryIds.includes(subCatId)) {
+                allSubCategoryIds.push(subCatId);
+              }
+            });
+          }
         });
       }
-      
-      if (this.data.city?.id) {
-        REQUEST_DATA.append("city_id", this.data.city.id);
+
+      // Append category_ids array
+      allCategoryIds.forEach((categoryId, index) => {
+        REQUEST_DATA.append(`category_ids[${index}]`, categoryId);
+      });
+
+      // Append sub_category_ids array
+      allSubCategoryIds.forEach((subCatId, index) => {
+        REQUEST_DATA.append(`sub_category_ids[${index}]`, subCatId);
+      });
+
+      // Handle city_id (can be object or number)
+      if (this.data.city) {
+        const cityId = typeof this.data.city === 'object' ? this.data.city.id : this.data.city;
+        if (cityId) {
+          REQUEST_DATA.append("city_id", cityId);
+        }
       }
-      if (this.data.district?.id) {
-        REQUEST_DATA.append("district_id", this.data.district.id);
+      
+      // Handle district_id (can be object or number)
+      if (this.data.district) {
+        const districtId = typeof this.data.district === 'object' ? this.data.district.id : this.data.district;
+        if (districtId) {
+          REQUEST_DATA.append("district_id", districtId);
+        }
       }
       if (this.data.dial_code) {
         REQUEST_DATA.append("country_code", this.data.dial_code);
@@ -511,32 +691,28 @@ export default {
       if (this.data.iso_code) {
         REQUEST_DATA.append("iso_code", this.data.iso_code);
       }
-      
-      // Append sub categories array
-      if (Array.isArray(this.data.sub_categories)) {
-        this.data.sub_categories.forEach((subCat, index) => {
-          REQUEST_DATA.append(`sub_category_ids[${index}]`, subCat.id);
-        });
-      }
-      
+
       // Append active status
       REQUEST_DATA.append("is_active", this.data.is_active ? "1" : "0");
-      
+
       // Add method for PUT request
-      REQUEST_DATA.append("_method", "put");
+      // REQUEST_DATA.append("_method", "put");
 
       try {
         await this.$axios({
           method: "POST",
-          url: `providers/${this.$route.params.id}`,
+          url: `auth/update-profile`,
           data: REQUEST_DATA,
         });
         this.isWaitingRequest = false;
         this.$message.success(this.$t("MESSAGES.editedSuccessfully"));
-        this.$router.push({ path: "/providers/all" });
+        // Optionally redirect or stay on the same page
+        // this.$router.push({ path: "/providers/all" });
       } catch (error) {
         this.isWaitingRequest = false;
-        this.$message.error(error.response?.data?.message || "An error occurred");
+        this.$message.error(
+          error.response?.data?.message || "An error occurred"
+        );
       }
     },
     // End:: Submit Form
@@ -575,5 +751,37 @@ export default {
   display: flex;
   align-items: center;
   padding: 10px 0;
+}
+
+.category-rows-wrapper {
+  width: 100%;
+}
+
+.category-row {
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  /* background: #ffffff; */
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.category-row:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: #1b706f;
+}
+
+.category-row .row {
+  margin: 0;
+}
+
+.category-row .row {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
+.category-row .row > div {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 </style>

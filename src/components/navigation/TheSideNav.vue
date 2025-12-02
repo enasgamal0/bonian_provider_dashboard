@@ -1013,6 +1013,27 @@
       </div> -->
       <!-- Start:: rates Route -->
 
+      <!-- Start:: providers Route -->
+      <div
+        class="home_route"
+        @click="$emit('fireToggleNavDrawerEmit')"
+      >
+        <router-link :to="`/providers/edit/${getAuthenticatedUserData.id}`">
+          <span class="route_icon">
+            <img
+              src="@/assets/media/icons/ui_icons/users.svg"
+              alt="icon"
+              width="40"
+              height="40"
+            />
+          </span>
+          <span class="route_text">
+            {{ $t("PLACEHOLDERS.edit_profile") }}
+          </span>
+        </router-link>
+      </div>
+      <!-- End:: providers Route -->
+
       <!-- Start:: Orders and Quotations Management Route -->
        <div
         class="home_route"

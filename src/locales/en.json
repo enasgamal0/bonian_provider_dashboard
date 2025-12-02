@@ -1295,6 +1295,9 @@
   },
 
   "PLACEHOLDERS": {
+    "categories": "Main Categories",
+    "subCategories": "Sub Categories",
+    "edit_profile": "Edit Provider Profile",
     "points": "Total points received from referral codes",
     "orders_count": "Total orders received",
     "offers_count": "Total offers sent",
