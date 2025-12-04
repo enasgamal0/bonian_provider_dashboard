@@ -164,7 +164,7 @@
         <!-- Start:: Unread Indicator -->
         <template v-slot:[`item.unread_messages_count`]="{ item }">
           <v-chip
-            v-if="item.unread_messages_count == 0"
+            v-if="item.last_message.readed_at"
             color="green"
             text-color="white"
             small
