@@ -51,13 +51,7 @@
       <!-- End:: Home Route -->
 
       <!-- Start::  Roles and Admins Routes-->
-      <div class="side_routes_wrapper"
-      v-if="
-            $can('roles index', 'roles') ||
-            $can('permissions-index', 'permissions') ||
-            $can('providers-index', 'providers') ||
-            $can('providers index', 'providers')
-          ">
+      <div class="side_routes_wrapper">
         <a-menu
           style="width: 100%"
           mode="vertical"
@@ -1038,9 +1032,6 @@
        <div
         class="home_route"
         @click="$emit('fireToggleNavDrawerEmit')"
-        v-if="
-          $can('orders index', 'orders')
-        "
       >
         <router-link to="/orders/all">
           <span class="route_icon">
@@ -1339,21 +1330,21 @@ export default {
           key: "dashboard",
           title: this.$t("SIDENAV.control_admins"),
           icon: require("@/assets/media/icons/ui_icons/roles.svg"),
-          hasPermission: this.$can("roles index", "roles"),
+          //hasPermission: this.$can("roles index", "roles"),
           children: [
             {
               key: "roles",
               title: this.$t("SIDENAV.Roles.title"),
               route: "/roles/all",
-              hasPermission:
-                this.$can("roles index", "roles") ||
-                this.$can("permissions index", "permissions"),
+             // hasPermission:
+             //   this.$can("roles index", "roles") ||
+              //  this.$can("permissions index", "permissions"),
             },
             {
               key: "admins",
               title: this.$t("SIDENAV.Admins.title"),
               route: "/admins/all",
-              hasPermission: this.$can("providers index", "providers"),
+              //hasPermission: this.$can("providers index", "providers"),
             },
           ],
         },
@@ -1364,35 +1355,35 @@ export default {
           key: "dashboard_places",
           title: this.$t("PLACEHOLDERS.places"),
           icon: require("@/assets/media/icons/ui_icons/addresses.svg"),
-          hasPermission:
-          this.$can("countries index", "countries") ||
-            this.$can("areas index", "areas") ||
-            this.$can("cities index", "cities") ||
-            this.$can("districts index", "districts"),
+          //hasPermission:
+          //this.$can("countries index", "countries") ||
+          //  this.$can("areas index", "areas") ||
+          //  this.$can("cities index", "cities") ||
+          //  this.$can("districts index", "districts"),
           children: [
             {
               key: "countries",
               title: this.$t("PLACEHOLDERS.manage_countries"),
               route: "/countries/all",
-              hasPermission: this.$can("countries index", "countries"),
+              //hasPermission: this.$can("countries index", "countries"),
             },
             {
               key: "areas",
               title: this.$t("PLACEHOLDERS.manage_areas"),
               route: "/areas/all",
-              hasPermission: this.$can("areas index", "areas"),
+              //hasPermission: this.$can("areas index", "areas"),
             },
             {
               key: "cities",
               title: this.$t("PLACEHOLDERS.cities"),
               route: "/cities/all",
-              hasPermission: this.$can("cities index", "cities"),
+              //hasPermission: this.$can("cities index", "cities"),
             },
             {
               key: "districts",
               title: this.$t("PLACEHOLDERS.districts"),
               route: "/districts/all",
-              hasPermission: this.$can("districts index", "districts"),
+             // hasPermission: this.$can("districts index", "districts"),
             },
           ],
         },
@@ -1403,19 +1394,19 @@ export default {
           key: "users_control",
           title: this.$t("PLACEHOLDERS.manage_users"),
           icon: require("@/assets/media/icons/ui_icons/clients.svg"),
-          hasPermission: this.$can("clients index", "clients"),
+          //hasPermission: this.$can("clients index", "clients"),
           children: [
             {
               key: "users",
               title: this.$t("PLACEHOLDERS.manage_all_users"),
               route: "/clients/all",
-              hasPermission: this.$can("clients index", "clients"),
+             // hasPermission: this.$can("clients index", "clients"),
             },
             {
               key: "joinUsers",
               title: this.$t("PLACEHOLDERS.joinClients"),
               route: "/joinClients/all",
-              hasPermission: this.$can("clients index", "clients"),
+            //  hasPermission: this.$can("clients index", "clients"),
             },
           ],
         },
@@ -1492,19 +1483,19 @@ export default {
           key: "rates",
           title: this.$t("PLACEHOLDERS.comments_management"),
           icon: require("@/assets/media/icons/ui_icons/star.svg"),
-          hasPermission: this.$can("rates index", "rates"),
+          //hasPermission: this.$can("rates index", "rates"),
           children: [
             {
               key: "app_rate",
               title: this.$t("PLACEHOLDERS.app_ratings"),
               route: "/app-rate/all",
-              hasPermission: this.$can("rates apprates", "rates"),
+              //hasPermission: this.$can("rates apprates", "rates"),
             },
             {
               key: "store_rate",
               title: this.$t("PLACEHOLDERS.store_ratings"),
               route: "/store-rate/all",
-              hasPermission: this.$can("rates salonrates", "rates"),
+              //hasPermission: this.$can("rates salonrates", "rates"),
             },
           ],
         },
@@ -1515,19 +1506,19 @@ export default {
           key: "providers",
           title: this.$t("PLACEHOLDERS.influencers_management"),
           icon: require("@/assets/media/icons/ui_icons/star.svg"),
-          hasPermission: this.$can("influencers index", "influencers"),
+          //hasPermission: this.$can("influencers index", "influencers"),
           children: [
             {
               key: "providers_list",
               title: this.$t("PLACEHOLDERS.influencers"),
               route: "/influencers/all",
-              hasPermission: this.$can("influencers index", "influencers"),
+              //hasPermission: this.$can("influencers index", "influencers"),
             },
             {
               key: "providers_join",
               title: this.$t("PLACEHOLDERS.influencers_join_requests"),
               route: "/influencers-requests/all",
-              hasPermission: this.$can("influencers index", "influencers"),
+              //hasPermission: this.$can("influencers index", "influencers"),
             },
           ],
         },
