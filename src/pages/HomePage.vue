@@ -18,9 +18,8 @@
             v-for="(value, key) in statics"
             :key="key"
           >
-            <div class="box">
+            <div class="box" @click="navigateToPage(key)" :style="{ cursor: key !== 'offers_count' ? 'pointer' : 'default' }">
               <div class="icon">
-                <!-- أيقونات حسب اسم الحقل -->
                 <i v-if="key === 'points'" class="fas fa-coins"></i>
                 <i
                   v-else-if="key === 'orders_count'"
@@ -93,6 +92,18 @@ export default {
         };
       } catch (error) {
         console.log(error.response?.data?.message);
+      }
+    },
+    navigateToPage(key) {
+      const routes = {
+        orders_count: "/orders/all",
+        chats_count: "/live-chat/all",
+        offers_count: null,
+        points: '/referralcodes/all',
+      };
+
+      if (routes[key]) {
+        this.$router.push(routes[key]);
       }
     },
   },

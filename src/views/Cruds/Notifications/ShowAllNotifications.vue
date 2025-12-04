@@ -7,22 +7,15 @@
           <div
             class="notification"
             :class="{ read: message.is_read == true }"
+            :style="{ cursor: (!message.is_read || (message?.type != 'admin_notification' && message?.redirect_id)) ? 'pointer' : 'default' }"
+            @click="message?.type != 'admin_notification' ? handleNotificationClickWithRedirect(message) : handleNotificationClick(message)"
             v-for="(message, index) in receivedMessages"
             :key="'k' + index"
           >
-            <router-link
-              v-if="message?.type != 'admin_notification'"
-              :to="
-                message?.type === 'Chat'
-                  ? '/live-chat/chat/' + message?.redirect_id
-                  : message?.type === 'create_order'
-                  ? `/orders/show/${message?.redirect_id}`
-                  : ''
-              "
-            >
+            <div v-if="message?.type != 'admin_notification'">
               <h3>{{ message.title }}</h3>
               <p>{{ message.body }}</p>
-            </router-link>
+            </div>
             <div v-if="message?.type == 'admin_notification'">
               <h3>{{ message.title }}</h3>
               <p>{{ message.body }}</p>
@@ -30,7 +23,7 @@
             <div
               class="delete_notification"
               :class="{ read: message.is_read }"
-              @click="NotificationsReaded(message.id)"
+              @click.stop="NotificationsReaded(message.id)"
               v-if="!message.is_read"
             >
               <i class="fas fa-check-double"></i>
@@ -169,6 +162,27 @@ export default {
     //   }
     // },
 
+    handleNotificationClick(message) {
+      // Mark as read if not already read (for admin notifications or when clicking outside the link)
+      if (!message.is_read) {
+        this.NotificationsReaded(message.id);
+      }
+    },
+    handleNotificationClickWithRedirect(message) {
+      // Mark as read if not already read (don't await, let it run in background)
+      if (!message.is_read) {
+        this.NotificationsReaded(message.id);
+      }
+      
+      // Navigate to the appropriate route if redirect_id exists
+      if (message?.redirect_id) {
+        if (message?.type === 'Chat') {
+          this.$router.push('/live-chat/chat/' + message?.redirect_id);
+        } else if (message?.type === 'create_order') {
+          this.$router.push(`/orders/show/${message?.redirect_id}`);
+        }
+      }
+    },
     async NotificationsReaded(item_id) {
       try {
         const REQUEST_DATA = new FormData();

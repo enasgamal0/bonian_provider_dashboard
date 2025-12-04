@@ -114,15 +114,7 @@
                 <h5 style="color: #1b706f; margin: 0;">
                   {{ $t('PLACEHOLDERS.categories') || 'Categories' }}
                 </h5>
-                <v-btn
-                  @click="addCategoryRow"
-                  color="#1b706f"
-                  small
-                  outlined
-                >
-                  <i class="fas fa-plus mr-2"></i>
-                  {{ $t('BUTTONS.add') || 'Add' }}
-                </v-btn>
+                
               </div>
 
               <div
@@ -170,6 +162,18 @@
                   </div>
                 </div>
               </div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <v-btn
+                  @click="addCategoryRow"
+                  color="#1b706f"
+                  small
+                  outlined
+                >
+                  <i class="fas fa-plus m-2"></i>
+                  {{ $t('BUTTONS.add') || 'Add' }}
+                </v-btn>
+              </div>
+              
             </div>
           </div>
           <!-- End:: Category Rows -->
