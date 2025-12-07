@@ -63,7 +63,7 @@
 
     .side_routes_wrapper {
       padding-block: 12px;
-
+      border-bottom: 1px solid white;
       .ant-menu {
         border: none;
         padding: 0;
@@ -131,7 +131,7 @@
 
           &.ant-menu-submenu-open {
             .ant-menu-submenu-title {
-              background-color: var(--main_theme_clr);
+              // background-color: var(--main_theme_clr);
             }
           }
         }
