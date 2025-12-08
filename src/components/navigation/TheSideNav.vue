@@ -51,7 +51,7 @@
       <!-- End:: Home Route -->
 
       <!-- Start::  Roles and Admins Routes-->
-      <div class="side_routes_wrapper">
+      <!-- <div class="side_routes_wrapper">
         <a-menu
           style="width: 100%"
           mode="vertical"
@@ -89,7 +89,7 @@
             </template>
           </a-sub-menu>
         </a-menu>
-      </div>
+      </div> -->
       <!-- <div class="side_routes_wrapper side_routes_wrapper_clients" v-if="$can('clients index', 'clients')">
         <a-menu
           style="width: 100%"

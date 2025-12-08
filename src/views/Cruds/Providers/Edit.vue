@@ -268,6 +268,7 @@ export default {
           urls: [],
           files: [],
           removedIndices: [],
+          imageIds: [], // Store image IDs for deletion
         },
         name: null,
         email: null,
@@ -385,12 +386,22 @@ export default {
 
         // Set previous works
         if (provider.previous_works && Array.isArray(provider.previous_works)) {
-          this.data.previous_works.urls = provider.previous_works
-            .map((pw) => {
-              if (typeof pw === 'string') return pw;
-              return pw.previous_work || pw.url || pw;
-            })
-            .filter(Boolean);
+          this.data.previous_works.urls = [];
+          this.data.previous_works.imageIds = [];
+          
+          provider.previous_works.forEach((pw) => {
+            if (typeof pw === 'string') {
+              this.data.previous_works.urls.push(pw);
+              this.data.previous_works.imageIds.push(null);
+            } else {
+              const url = pw.previous_work || pw.url || pw;
+              const id = pw.id || null;
+              if (url) {
+                this.data.previous_works.urls.push(url);
+                this.data.previous_works.imageIds.push(id);
+              }
+            }
+          });
         }
 
         // Initialize category rows
@@ -567,7 +578,28 @@ export default {
     // End:: Select Previous Works
 
     // Start:: Remove Previous Work
-    removePreviousWork(index) {
+    async removePreviousWork(index) {
+      const imageId = this.data.previous_works.imageIds[index];
+      
+      // If the image has an ID, call the delete API
+      if (imageId) {
+        try {
+          await this.$axios({
+            method: "POST",
+            url: `auth/delete-image/${imageId}`,
+          });
+          this.$message.success(this.$t("MESSAGES.deletedSuccessfully"));
+        } catch (error) {
+          this.$message.error(
+            error.response?.data?.message || "An error occurred while deleting the image"
+          );
+          return; // Don't remove from UI if deletion failed
+        }
+      }
+      
+      // Remove from arrays
+      this.data.previous_works.urls.splice(index, 1);
+      this.data.previous_works.imageIds.splice(index, 1);
       this.data.previous_works.removedIndices.push(index);
     },
     // End:: Remove Previous Work
